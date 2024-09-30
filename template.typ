@@ -197,17 +197,19 @@
         box(
           inset: (y: 10pt),
           {
-            authors.map(author => {
-              text(16pt, weight: "semibold")[
-                #if "homepage" in author {
-                  [#link(author.homepage)[#author.name]]
-                } else {
-                  author.name
-                }]
-              if "affiliations" in author {
-                super(author.affiliations)
-              }
-            }).join(
+            authors
+              .map(author => {
+                  text(16pt, weight: "semibold")[
+                    #if "homepage" in author {
+                      [#link(author.homepage)[#author.name]]
+                    } else {
+                      author.name
+                    }]
+                  if "affiliations" in author {
+                    super(author.affiliations)
+                  }
+                })
+              .join(
               ", ",
               last: {
                 if authors.len() > 2 {
@@ -225,11 +227,13 @@
         box(
           inset: (bottom: 10pt),
           {
-            affiliations.map(affiliation => {
-              text(12pt)[
-                #h(1pt)#affiliation.name
-              ]
-            }).join(", ")
+            affiliations
+              .map(affiliation => {
+                  text(12pt)[
+                    #h(1pt)#affiliation.name
+                  ]
+                })
+              .join(", ")
           },
         )
       }

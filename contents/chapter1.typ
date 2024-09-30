@@ -1,7 +1,7 @@
 #import "../template.typ": *
 #import "@preview/codelst:2.0.1": sourcecode
 
-= Iterative methods for large linear systems
+= Sparse matrices
 
 == Sparse matrices storage formats
 
@@ -51,3 +51,5 @@ To create a sparse matrix in the CSR format, we use the `csr_matrix` function, w
     >>> A.indptr
     array([0, 1, 3, 3, 5], dtype=int32)
   ```]
+
+#pagebreak()

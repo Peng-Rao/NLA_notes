@@ -21,4 +21,7 @@
 )
 #set math.mat(delim: "[")
 #set math.vec(delim: "[")
+#set math.equation(supplement: [Eq.])
+#include "./contents/chapter0.typ"
 #include "./contents/chapter1.typ"
+#include "./contents/chapter2.typ"

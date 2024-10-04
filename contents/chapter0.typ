@@ -65,6 +65,85 @@ Given vector norms $norm(dot)_(n)$ and $norm(dot)_(m)$ on the domain and the ran
 
 $ norm(A\x)_((m)) lt.eq C norm(x)_((n)) $
 
+#definition[
+  A _matrix norm_ is a mapping $norm(dot): RR^(m times n) arrow RR$ such that:
+
+  #block[
+    + $norm(A) gt.eq 0 forall A in RR^(m times n) "and" norm(A)=0$ if and only if $A=0$.
+    + $norm(alpha A) = |alpha| norm(A) forall A in RR^(m times n) "and" alpha in CC$.
+    + $norm(A+B) lt.eq norm(A) + norm(B) forall A, B in RR^(m times n)$.(triangular inequality)
+  ]
+] <matrixnorm>
+
+
+
+#definition[
+  We say that a matrix norm $norm(dot)$ is _compatible_ or _consistent_ with a vector norm $norm(dot)$ if:
+  $
+    norm(A\x) lt.eq norm(A) norm(x) #h(1cm) forall x in RR^n
+  $
+  More generally, given three norms, all denoted by $norm(dot)$, albeit defined on $RR^m, RR^n. RR^(m times n)$, respectively, we say that they are consistent if if $forall x in RR^n, A\x=y in RR^m$, we have that $norm(y) lt.eq norm(A) norm(x)$.
+]
+
+#definition[
+  We say that a matrix norm $norm(dot)$ is sub_multiplicative if $forall A in RR^(n times m), forall B in RR^(m times q)$ we have that $
+  norm(A\B) lt.eq norm(A) norm(B) $
+]
+
+The norm
+$
+  norm(A)_F = sqrt(sum_(i=1)^m sum_(j=1)^n |a_(i\j)|^2)=sqrt(tr(A A^H))
+$
+is a matrix norm called the _Frobenius norm_. And it is compatible with the Euclidean vector norm $norm(dot)_2$. Indeed.
+$
+  norm(A\x)_2^2=sum_(i=1)^m |sum_(j=1)^n a_(i\j) x_j|^2 lt.eq sum_(i=1)^m sum_(j=1)^n |a_(i\j)|^2 sum_(j=1)^n |x_j|^2=norm(A)_F^2 norm(x)_2^2
+$
+
+#theorem[
+  Let $norm(dot)$ be a vector norm. The function:
+  $
+    norm(A)=sup_(x eq.not 0) norm(A\x) / norm(x)
+  $
+  is a matrix norm called _induced matrix norm or natural matrix norm._
+
+  \ *Proof*: Check @matrixnorm.
+  \ 1. If $norm(A x) gt.eq 0$, then it follows that $norm(A) = sup_(norm(x)=1) norm(A x) gt.eq 0$. Moreover,
+  $
+    norm(A)=sup_(x eq.not 0) norm(A x) / norm(x) = 0 arrow.r.l.double.long norm(A x)=0 forall x eq.not 0
+  $
+  and $A x=0 forall x eq.not 0$ if and only if $A=0$; therefore, $norm(A)=0$ if and only if $A=0$.
+  \ 2. Given a scalar $alpha$, we have that:
+  $
+    norm(alpha A)=sup_(x eq.not 0) norm(alpha A x) / norm(x) = sup_(x eq.not 0) |alpha| norm(A x) / norm(x) = |alpha| sup_(x eq.not 0) norm(A x) / norm(x) = |alpha| norm(A)
+  $
+  \ 3. Finally, triangular inequality holds. Indeed, by definition of supremum, if $x eq.not 0$ then:
+  $
+    (norm(A x)) / norm(x) lt.eq norm(A) arrow.double norm(A x) lt.eq norm(A) norm(x)
+  $
+  So that, taking $x$ with unit norm, one gets:
+  $
+    norm((A+B) x) lt.eq norm(A x) + norm(B x) lt.eq norm(A) + norm(B)
+  $
+  from which it follows that $norm(A+B)=sup_(norm(x)=1) norm((A+B)x) lt.eq norm(A) + norm(B)$.
+]
+
+Relevant instances of induced matrix norms are the so-called _p-norms_:
+$
+  norm(A)_p = sup_(bold(x) eq.not 0) norm(A bold(x))_p / norm(bold(x))_p
+$
+
+The 1-norm(column sum norn):
+$
+  norm(A)_1 = max_(j=1, dots, n)^n sum_(i=1)^m |a_(i\j)|
+$
+
+The infinity-norm(row sum norm):
+$
+  norm(A)_(infinity) = max_(i=1, dots, m)^m sum_(j=1)^n |a_(i\j)|
+$
+
+Moreover, we have $norm(A)_1=norm(A^T)_infinity$ and, if $A$ is self-adjoint or real sysmetric, then $norm(A)_1=norm(A)_infinity$.
+
 = Principles of Numerical Mathematics
 
 == Well-posedness and Condition Number of a Problem

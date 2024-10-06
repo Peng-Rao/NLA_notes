@@ -144,6 +144,28 @@ $
 
 Moreover, we have $norm(A)_1=norm(A^T)_infinity$ and, if $A$ is self-adjoint or real sysmetric, then $norm(A)_1=norm(A)_infinity$.
 
+A special discussion is deserved by the _2-norm_ or _spectral norm_ for which the following theorem holds.
+
+#theorem("Spectral Norm")[
+  Let $sigma_1(A)$ be the largest singular value of $A$. Then, the 2-norm of $A$ is given by:
+
+  $ norm(A)_2 = sqrt(rho(A^H A)) = sqrt(rho(A^H A)) = = sigma_1(A) $
+
+  In particular, if $A$ is hermitian (or real and symmetric), then $norm(A)_2 = rho(A)$.
+
+  \ *Proof*. Since $A^T A$ is hermitian, there exists a unitary matrix $U$ such that $ U^H A^H A U = "diag"(mu_1, dots, mu_n) $
+  where $mu_i$ are the positive eigenvalues of $A^H A$. Let $y=U^H x$, then:
+
+  $
+    norm(A_2)= &sup_(x eq.not 0) sqrt((A^H A x, x)) / sqrt((x, x)) = sup_(y eq.not 0) sqrt((U^H A^H A U y "," y)) / sqrt((y "," y)) \ = &sup_(y eq.not 0) sqrt(sum_(i=1)^n mu_i |y_i|^2) / sqrt(sum_(i=1)^n |y_i|^2) = sqrt(max_(i=1, dots, n)^n |mu_i|)
+  $
+  If $A$ is hermitian, the same considerations as above apply directly to $A$.
+  Finally, if $A$ is unitary, we have
+  $
+    norm(A)_2 = sup_(x eq.not 0) norm(A x)_2 / norm(x)_2 = sup_(x eq.not 0) norm(x)_2 / norm(x)_2 = 1
+  $
+]
+
 = Principles of Numerical Mathematics
 
 == Well-posedness and Condition Number of a Problem

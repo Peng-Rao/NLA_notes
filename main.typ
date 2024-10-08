@@ -25,3 +25,4 @@
 #include "./contents/chapter0.typ"
 #include "./contents/chapter1.typ"
 #include "./contents/chapter2.typ"
+#include "./contents/chapter3.typ"

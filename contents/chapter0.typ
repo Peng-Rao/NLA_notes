@@ -216,19 +216,57 @@ The @3 is however more suitable to express in the following the concept of _nume
 ]
 
 === Absolute Condition Number
+Let $delta x$ denote a small perturbation of $x$, and wirte $delta f = f(x + delta x, d) - f(x, d)$. The absolute condition number is then defined as:
+$ k=lim_(delta arrow 0) sup_(norm(delta x) lt.eq delta) norm(delta f) / norm(delta x) $
+For most problems, the limit of the supremum in this formula can be interpreted as a supremum over all infinitesimal perturbations $delta x$, and in the interest of readability, we shall generally write the formula simply as
+$ K=sup_(delta x) norm(delta f) / norm(delta x) $
+with the understanding that $delta x$ and $delta f$ are infinitesimal.
 
 If $f$ is differentiable, we can evaluate the absolute condition number by means of the derivative of $f$. Let $J(x)$ be the matrix whose $i, j$ entry is the partial derivative $partial f_i slash partial x_j$, evaluated at $x$. The definition of derivative gives us, $delta f #sym.approx J(x)delta x$, with equality in the limit $norm(delta x) arrow 0$. The absolute condition number is then:
-
 $ K=norm(J(x)) $
-
 === Relative Condition Number
 
+When we are concerned with relative changes, we need the notion of relative condition. The _relative condition number_ is defined as:
+$
+  K = lim_(delta arrow 0) sup_(norm(delta x) lt.eq delta) (norm(delta f) / (norm(f(x))) slash norm(delta x) / norm(x))
+$
+or, assuming $delta x$ and $delta f$ are infinitesimal,
+$
+  K = sup_(delta x) (norm(delta f) / norm(f(x))) / (norm(delta x) / norm(x))
+$
 If $f$ is differentiable, we can express this equality in terms of the Jacobian matrix $J(x)$, as follows:
 
 $ K = norm(J(x)) / (norm(f\x) slash norm(x)) $
 
 Problem @1 is called _ill-conditioned_ if $K(d)$ is “big” for any admissible datum d (the precise meaning of “small” and “big” is going to change depending on the considered problem).
 
+=== Codution of Matrix-Vector Multiplication
+
+Now we come to one of the condition numbers of fundamental importance in numerical linear algebra.
+
+Fix $A in CC^(m times n)$ and consider the problem of computing $A x$ from input $x$; that is, we are going to determine a condition number corresponding to perturbations of $x$ but not $A$. Working directly from the definition of $K$, with $norm(dot)$ denoting an arbitrary vector norm and the corresponding induced matrix norm, we have:
+$
+  K=sup_(delta x) (norm(A(x+delta x)-A x) / norm(A x)) slash (
+    norm(delta x) / norm(x)
+  ) = sup_(delta x) norm(A delta x) / norm(delta x) slash norm(A x) / norm(x)
+$
+that is,
+$
+  K=norm(A) norm(x) / norm(A x)
+$ <conditionnumberAx>
+This is an exact formula for $K$, dependent on both $A$ and $x$.
+
+Suppose $A$ is square and nonsingular. Then we can use the fact that $norm(x) slash norm(A x) lt.eq norm(A^(-1))$ to loosen @conditionnumberAx to a bound independent of $x$:
+$ K lt.eq norm(A) norm(A^(-1)) $
+Or, one might write this as:
+$
+  k = alpha norm(A) norm(A^(-1))
+$
+with
+$
+  alpha = norm(x) / norm(A x) slash norm(A^(-1))
+$
+If $norm(dot)=norm(dot)_2$ this will occur whenever $x$ is a multiple of a minimal right singular vector of $A$.
 == Stability of Numerical Methods
 
 We shall henceforth suppose the problem @1 to be well-posed and a numerical method for the approximate solution of @1 will consist, in general, of a sequence of approximate problems:

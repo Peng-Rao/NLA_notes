@@ -168,7 +168,7 @@ A special discussion is deserved by the _2-norm_ or _spectral norm_ for which th
 
 = Principles of Numerical Mathematics
 
-== Well-posedness and Condition Number of a Problem
+== Well-posedness and Condition Number
 
 Consider the following problem: find $x$ such that:
 
@@ -267,8 +267,32 @@ $
   alpha = norm(x) / norm(A x) slash norm(A^(-1))
 $
 If $norm(dot)=norm(dot)_2$ this will occur whenever $x$ is a multiple of a minimal right singular vector of $A$.
-== Stability of Numerical Methods
 
+=== Condition number of a Matrix
+The product $norm(A) norm(A^(-1))$ comes up so often that it has its own name: it is the _condition number_ of $A$:
+$ K(A) = norm(A) norm(A^(-1)) $
+
+Thus, in this case the term _condition number_ is attached to a matrix, not a problem. If $K(A)$ is small, $A$ is said to be _well-conditioned_; if it is large, $A$ is _ill-conditioned_. If $A$ is singular, it is customary to write $K(A) = infinity$.
+
+Note that if $norm(dot)=norm(dot)^2$, then $norm(A)=sigma_1$ and $A^(-1)=1 / sigma_m$. Thus
+$ K(A) = sigma_1 / sigma_m $
+In the 2-norm, and it is this formula that is generally used for computing 2-norm condition numbers of matrices.
+
+For a rectangular matrix $A in CC^(m times n)$ of full rank, $m gt.eq n$, the condition numver is defined in terms of the *pseudoinverse*: $K(A)=norm(A) norm(A^+)$. Since $A^+$ is motivated by least squares problems, this definition is most useful in the case $norm(dot)=norm(dot)^2$, where we have
+$ K(A) = sigma_1 / sigma_n $
+
+=== Condition Number of a System of Equations
+Specifically, let us hold $b$ fixed and consider the behavior of the problem $A arrow x = A^(-1)b$ when $A$ is perturbed by infinitesimal $delta A$. Then $x$ must change by infinitesimal $delta x$ such that:
+$ (A+delta A)(x + delta x)=0 $
+Using the equality $A x=b$ and dropping the doubly infinitesimal term $(delta A)(delta x)$, we obtain $(sigma A)x + A(sigma)x=0$. that is, $sigma x = -A^(-1)(sigma A)x$. This equation implies $norm(sigma x) lt.eq norm(A^(-1)) norm(sigma A) norm(x)$, or equivalently:
+$
+  (sigma x) / norm(x) slash (sigma A) / norm(A) lt.eq norm(A^(-1)) norm(A) = K(A)
+$
+#theorem[
+  Let b be fixed and consider the problem of computing $x=A^(-1)b$, where $A$ is square and nonsingular. The condition number of this problem with respect to perturbations in $A$ is
+  $ K(A) = norm(A) norm(A^(-1)) $
+]
+== Stability of Numerical Methods
 We shall henceforth suppose the problem @1 to be well-posed and a numerical method for the approximate solution of @1 will consist, in general, of a sequence of approximate problems:
 
 $ F(x_n,d_n) = 0 $ <problem2>

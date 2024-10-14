@@ -1,4 +1,4 @@
-#import "template.typ": *
+#import "../template.typ": *
 
 #show: template.with(
   title: [ Numerical Linear Algebra ],
@@ -22,7 +22,7 @@
 #set math.mat(delim: "[")
 #set math.vec(delim: "[")
 #set math.equation(supplement: [Eq.])
-#include "./contents/chapter0.typ"
-#include "./contents/chapter1.typ"
-#include "./contents/chapter2.typ"
-#include "./contents/chapter3.typ"
+#include "chapter0.typ"
+#include "chapter1.typ"
+#include "chapter2.typ"
+#include "chapter3.typ"

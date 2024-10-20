@@ -24,7 +24,6 @@
 #set math.vec(delim: "[")
 #set math.equation(supplement: [Eq.])
 
-
 = Norms
 
 The essential notions of *size and distance* in a vector space are captured by norms. These are the _yardsticks_ with which we measure approximations and convergence throughout numerical linear algebra.

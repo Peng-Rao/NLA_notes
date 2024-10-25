@@ -511,4 +511,65 @@ This method is consistent if any $omega eq.not 0$ and for $omega=1$ it coincides
 #import "../template.typ": *
 
 = Numerical methods for overdetermined linear systems of equations
+#pagebreak()
+= Solving large scale eigenvalue problems
+== Eigenvalues and Eigenvectors
+Given a square matrix $A in CC^(n times n)$, find a scalar $lambda$ and a nonzero vector $x in CC^n$ such that:
+$ A x = lambda x $ <eigenproblem>
+where:
++ The vector x is the _eigenvector_, And the scalar $lambda$ is the _eigenvalue_
++ The set of all the eigenvalues of a matrix $A$ is called the _spectrum_ of $A$, denoted by $sigma(A)$.
++ The maximum modulus of all the eigenvalues is called the spectral radius of $A$ and is denoted by $rho(A) = max_{lambda in sigma(A)} |lambda|$.
 
+*Remarks*
++ The eigenvalues of a matrix are the roots of the characteristic polynomial $det(A - lambda I) = 0$.
++ From the Fundamental Theorem of Algebra, an $n times n$ matrix has exactly $n$ eigenvalues, counting multiplicities.
++ Each $lambda_i$ may be real but in general is a complex number
++ The eigenvalues $lambda_1, lambda_2, dots, lambda_n$may not all have disSnct values
++ Rayleigh quotient: $lambda_i = (x_i^H A x_i) / (x_i^H x_i)$
+
+== The Power Method
+Let $A in CC^(n times n)$ be a diagonalizable matrix and let $X in CC^(n times n)$ be the matrix of its eigenvectors $bold(x_i)$. for $i=1, dots, n$. Let us also suppose that the eigenvalues of $A$ are ordered as
+$ |lambda_1| < |lambda_2| lt.eq dots lt.eq |lambda_n| $.
+Where $lambda_1$ has algebraic multiplicity equal to 1. Under these assumptions, $lambda_1$, is called the _dominant eigenvalue_ of $A$.
+
+Given an arbitrary initial vector $bold(q)_0 in CC^n$ with unitary Euclidean norm, consider for $k=1,2, dots$ the following iteration based on the computation of powers ofmatrices, commonly known as the _power method_:
+$
+  bold(z)^((k)) =& A bold(q)^((k-1)) \
+  bold(q)^((k)) =& bold(z)^((k)) / norm(bold(z)^((k))) \
+  nu^((k)) =& bold(q)^((k))^H A bold(q)^((k))
+$
+Let us analyze the convergence of the power method. By induction on $k$, we have that:
+$
+  bold(q)^((k)) =& A^k bold(q)^((0)) / norm(A^k bold(q)^((0))), k gt.eq 1
+$
+This relation explains the role played by the powers of $A$ in the method. Because $A$ is diagonalizable, its eigenvectors $bold(x)_i$ form a basis of $CC^n$ and we can write:
+$
+  bold(q)^((0)) = sum_(i=1)^n alpha_i bold(x)_i
+$
+Moreover, since $A bold(x)_i = lambda_i bold(x)_i$, we have:
+$
+  A^k bold(q)^((0)) =& sum_(i=1)^n alpha_i lambda_i^k bold(x)_i \
+  =& alpha_1 lambda_1^k (bold(x)_1 + sum_(i=2)^n alpha_i / alpha_1 (lambda_i / lambda_1)^k bold(x)_i)
+$
+Since $abs(lambda_i / lambda_1) < 1$ for $i=2, dots , n$, as $k$ increases the term $sum_(i=2)^n alpha_i / alpha_1 (lambda_i / lambda_1)^k bold(x)_i$ tends to assume an increasingly significant component in the direction of the eigenvector $bold(x)_1$, while ts components in the other directions $bold(x)_j$ decrease.
+
+As $k arrow infinity$, the vector $bold(q)^((k))$ thus aligns itself along the direction of eigenvector $bold(x)_1$, and the following error estimate holds at each step $k$.
+
+#theorem("Convergence of the Power Method")[
+  Let $A in CC^(n times n)$ be a diagonalizable matrix whose dominant eigenvalue is $lambda_1$. Assuming that $alpha_1 eq.not 0$, there exists a constant $C gt 0$ such that:
+  $
+    norm(bold(tilde(q))^((k)) - bold(x)_1) lt.eq C (|lambda_2 / lambda_1|)^k, k gt.eq 1
+  $ <EstimatePowerMethod>
+  where:
+  $
+    bold(tilde(q))^((k)) = bold(x)_1 + sum_(i=2)^n alpha_i / alpha_1 (lambda_i / lambda_1)^k bold(x)_i, k = 1,2, dots
+  $
+]
+Estimate @EstimatePowerMethod expresses the convergence of the sequence of $bold(tilde(q))^((k))$ towards the eigenvector $bold(x)_1$ of $A$. Therefore the sequence of Rayleigh quotients
+$
+  bold(tilde(q))^((k))^H A bold(tilde(q))^((k)) slash norm(bold(tilde(q))^((k))) = (bold(q)^((k)))^H A bold(q)^((
+    k
+  ))= nu^((k))
+$
+will converge to the dominant eigenvalue $lambda_1$ of $A$. As a consequence, and the convergence will be faster when the ratio $|lambda_2 / lambda_1|$ is smaller.

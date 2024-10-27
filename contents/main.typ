@@ -1,5 +1,6 @@
 #import "../template.typ": *
 #import "@preview/codelst:2.0.1": sourcecode
+#import "@preview/lovelace:0.3.0": *
 
 #show: template.with(
   title: [ Numerical Linear Algebra ],
@@ -23,6 +24,9 @@
 #set math.mat(delim: "[")
 #set math.vec(delim: "[")
 #set math.equation(supplement: [Eq.])
+
+= Matrix Factorizations
+
 
 = Norms
 
@@ -538,7 +542,17 @@ $
   bold(z)^((k)) =& A bold(q)^((k-1)) \
   bold(q)^((k)) =& bold(z)^((k)) / norm(bold(z)^((k))) \
   nu^((k)) =& bold(q)^((k))^H A bold(q)^((k))
-$
+$ <PowerMethod>
+#align(center)[
+  #pseudocode-list(line-numbering: none, booktabs: true, title: smallcaps[The Power Method])[
+    + $bold(q)_0=$some initial vector with $norm(q_0)=1$
+    + *For* $k=1,2, dots$
+      + Apply $A$: $bold(z)^((k))=A bold(q)^((k-1))$ #h(1cm)
+      + Normalize: $bold(q)^((k))=bold(z)^((k)) / norm(bold(z)^((k)))$ #h(1cm)
+      + Compute Rayleigh quotient: $nu^((k))=bold(q)^((k))^H A bold(q)^((k))$ #h(1cm)
+  ]
+]
+
 Let us analyze the convergence of the power method. By induction on $k$, we have that:
 $
   bold(q)^((k)) =& A^k bold(q)^((0)) / norm(A^k bold(q)^((0))), k gt.eq 1
@@ -573,3 +587,29 @@ $
   ))= nu^((k))
 $
 will converge to the dominant eigenvalue $lambda_1$ of $A$. As a consequence, and the convergence will be faster when the ratio $|lambda_2 / lambda_1|$ is smaller.
+
+== The Inverse Power Method
+We look for an approximation of the eigenvalue of a matrix $A in CC^(n times n)$ which is _closest_ to a given number $mu in CC$, where $mu in.not sigma(A)$. For this, the power iteration is applied to the matrix $(M_mu)^(-1)=(A - mu I)^(-1)$, yielding the so-called _inverse iteration_ or _inverse power method_. The number $mu$ is called the _shift_ of the method.
+
+The eigenvalues of $M_u^(-1)$ are $xi=(lambda_i - mu)^(-1)$, let us assume that there exists an integer m such that
+$
+  abs(lambda_m - mu) lt abs(lambda_i - mu)
+$
+Given an arbitrary initial vector $bold(q)_0 in CC^n$ with unitary Euclidean norm, for $k=1,2, dots$ the following sequence is constructed:
+$
+  (A - mu I) bold(z)^((k)) =& bold(q)^((k-1)) \
+  bold(q)^((k)) =& bold(z)^((k)) / norm(bold(z)^((k))) \
+  nu^((k)) =& bold(q)^((k))^H A bold(q)^((k))
+$ <InversePowerMethod>
+#align(center)[
+  #pseudocode-list(line-numbering: none, booktabs: true, title: smallcaps[The Inverse Power Method])[
+    + $bold(q)_0=$some initial vector with $norm(q_0)=1$
+    + *For* $k=1,2, dots$
+      + Apply $(A - mu I)$: $bold(z)^((k))=(A - mu I) bold(q)^((k-1))$ #h(1cm)
+      + Normalize: $bold(q)^((k))=bold(z)^((k)) / norm(bold(z)^((k)))$ #h(1cm)
+      + Compute Rayleigh quotient: $nu^((k))=bold(q)^((k))^H A bold(q)^((k))$ #h(1cm)
+  ]
+]
+Notice that the eigenvectors of $M_mu$ are the same as those of $A$ since $M_mu = X(Lambda - mu I_n) X^(-1)$, where $Lambda = "diag"(lambda_1, dots, lambda_n)$. For this reason, the Rayleigh quotient in @InversePowerMethod is computed directly on the matrix $A$. The main diﬀerence with respect to @PowerMethod is that at each step $k$ a linear system with coeﬃcient matrix $M_mu = A - mu I$ _must be solved_.
+
+== QR Factorization

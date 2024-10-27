@@ -131,6 +131,7 @@
 
   // 设置段落
   set par(
+    leading: 1em,
     first-line-indent: 1.8em,
     justify: true,
     linebreaks: "optimized",
@@ -274,7 +275,10 @@
   pagebreak()
 
   // 显示笔记的目录
-  outline(indent: auto)
+  outline(
+    indent: auto,
+    depth: 2,
+  )
 
   v(24pt, weak: true)
 
@@ -388,3 +392,28 @@
     notebox(name, number, body, "proposition", propSvg, navy)
   },
 ).with(numbering: boxnumbering)
+
+
+// define some math symbols and functions
+
+#let Rn = $bold(R)^n$
+#let v = math.bold("v")
+#let w = math.bold("w")
+#let mul_vec = $bold(v_1),dots,bold(v_n)$
+#let norm(v) = $#sym.bar.v.double#math.bold(v)#sym.bar.v.double$
+#let vx = $bold(x)$
+
+#let one_mat(rows, cols) = {
+  let data = ()
+  for i in range(rows) {
+    let row = ()
+    for j in range(cols) {
+      row.push(1)
+    }
+    data.push(row)
+  }
+
+  return math.mat(..data)
+}
+
+#let pythagorean_theorem = $c^2=a^2+b^2$

@@ -26,14 +26,16 @@
 #set math.equation(supplement: [Eq.])
 
 = Matrix Factorizations
-
+== Cholesky Factorization
+Let $A in RR^(n times n)$ be a _symmetric and positive definite_ (SPD) matrix. Then, there exists a unique lower triangular matrix $L in RR^(n times n)$ with positive diagonal
+entries such that:
+$ A = L^T L $ <CholeskyFactorization>
+This factorization is called _Cholesky factorization_.
 
 = Norms
-
 The essential notions of *size and distance* in a vector space are captured by norms. These are the _yardsticks_ with which we measure approximations and convergence throughout numerical linear algebra.
 
 == Vector Norms
-
 A norm is a function $norm(dot): CC^m arrow RR$ that assigns a real-valued length to each vector. In order to conform to a reasonable notion of length, a norm must satisfy the following three conditions. For all vectors $x, y$ and for all scalars $alpha in CC$:
 
 #block[
@@ -62,10 +64,10 @@ $
 
   We recall that the scalr product in $RR^n$ can be realyed to the p-norms by the H\"older inequality:
 
-  $ |(x,y)| lt.eq norm(x)_p norm(y) _q #h(1cm) "Where" #h(1cm) 1/p + 1/q = 1 $.
+  $ |(x,y)| lt.eq norm(x)_p norm(y) _q #h(1cm) "Where" #h(1cm) 1/p + 1/q = 1 $
 ]
 
-#theorem[
+#theorem("Norm continuity")[
   Any vector norm $norm(dot)$ defined on V is a continous function of its argument, namely, $forall > 0, exists C > 0$ such that if $norm(x-hat(x)) lt.eq epsilon$ then $norm(x)-norm(hat(x)) lt.eq C epsilon$, for any $x, hat(x) in V$.
 ]
 
@@ -77,7 +79,7 @@ $
   is a norm on $RR^n$.
 ]
 
-#theorem[
+#theorem("Convergence")[
   Let $norm(dot)$ be a norm in a finite dimensional space V. Then:
   $
     lim_(k arrow infinity) x^((k))=x arrow.l.r.double.long lim_(k arrow infinity) norm(x^((k))-x)=0
@@ -86,24 +88,17 @@ $
 ]
 
 == Matrix Norms
-
 In dealing with a space of matrices, certain special norms are more useful thant the vector norms. These are the _induced matrix norms_, defined in terms of the behavior of a matrix as an operator between its normed domain and range spaces.
 
-Given vector norms $norm(dot)_(n)$ and $norm(dot)_(m)$ on the domain and the range of $A in CC^(m times n)$, respectively, the induced matirx norm $norm(A)_((m, n))$ is the smallest number $C$ for which the following inequality holds for all $x in CC^n$:
-
-$ norm(A\x)_((m)) lt.eq C norm(x)_((n)) $
-
-#definition[
+#definition("Matrix Norm")[
   A _matrix norm_ is a mapping $norm(dot): RR^(m times n) arrow RR$ such that:
 
   #block[
     + $norm(A) gt.eq 0 forall A in RR^(m times n) "and" norm(A)=0$ if and only if $A=0$.
     + $norm(alpha A) = |alpha| norm(A) forall A in RR^(m times n) "and" alpha in CC$.
-    + $norm(A+B) lt.eq norm(A) + norm(B) forall A, B in RR^(m times n)$.(triangular inequality)
+    + $norm(A+B) lt.eq norm(A) + norm(B) forall A, B in RR^(m times n)$(triangular inequality)
   ]
 ] <matrixnorm>
-
-
 
 #definition[
   We say that a matrix norm $norm(dot)$ is _compatible_ or _consistent_ with a vector norm $norm(dot)$ if:
@@ -113,21 +108,23 @@ $ norm(A\x)_((m)) lt.eq C norm(x)_((n)) $
   More generally, given three norms, all denoted by $norm(dot)$, albeit defined on $RR^m, RR^n. RR^(m times n)$, respectively, we say that they are consistent if if $forall x in RR^n, A\x=y in RR^m$, we have that $norm(y) lt.eq norm(A) norm(x)$.
 ]
 
-#definition[
-  We say that a matrix norm $norm(dot)$ is sub_multiplicative if $forall A in RR^(n times m), forall B in RR^(m times q)$ we have that $
+#definition("Sub multiplicative")[
+  We say that a matrix norm $norm(dot)$ is _sub-multiplicative_ if $forall A in RR^(n times m), forall B in RR^(m times q)$ we have that $
   norm(A\B) lt.eq norm(A) norm(B) $
 ]
 
-The norm
-$
-  norm(A)_F = sqrt(sum_(i=1)^m sum_(j=1)^n |a_(i\j)|^2)=sqrt(tr(A A^H))
-$
-is a matrix norm called the _Frobenius norm_. And it is compatible with the Euclidean vector norm $norm(dot)_2$. Indeed.
-$
-  norm(A\x)_2^2=sum_(i=1)^m |sum_(j=1)^n a_(i\j) x_j|^2 lt.eq sum_(i=1)^m sum_(j=1)^n |a_(i\j)|^2 sum_(j=1)^n |x_j|^2=norm(A)_F^2 norm(x)_2^2
-$
+#definition("Fronebius Norm")[
+  The norm
+  $
+    norm(A)_F = sqrt(sum_(i=1)^m sum_(j=1)^n |a_(i\j)|^2)=sqrt(tr(A A^H))
+  $
+  is a matrix norm called the _Frobenius norm_. And it is compatible with the Euclidean vector norm $norm(dot)_2$. Indeed.
+  $
+    norm(A\x)_2^2=sum_(i=1)^m |sum_(j=1)^n a_(i\j) x_j|^2 lt.eq sum_(i=1)^m sum_(j=1)^n |a_(i\j)|^2 sum_(j=1)^n |x_j|^2=norm(A)_F^2 norm(x)_2^2
+  $
+]
 
-#theorem[
+#theorem("Induced Matrix Norm")[
   Let $norm(dot)$ be a vector norm. The function:
   $
     norm(A)=sup_(x eq.not 0) norm(A\x) / norm(x)
@@ -180,8 +177,7 @@ A special discussion is deserved by the _2-norm_ or _spectral norm_ for which th
   $ norm(A)_2 = sqrt(rho(A^H A)) = sqrt(rho(A^H A)) = = sigma_1(A) $
 
   In particular, if $A$ is hermitian (or real and symmetric), then $norm(A)_2 = rho(A)$.
-
-  \ *Proof*. Since $A^T A$ is hermitian, there exists a unitary matrix $U$ such that $ U^H A^H A U = "diag"(mu_1, dots, mu_n) $
+  \ *Proof*： Since $A^T A$ is hermitian, there exists a unitary matrix $U$ such that $ U^H A^H A U = "diag"(mu_1, dots, mu_n) $
   where $mu_i$ are the positive eigenvalues of $A^H A$. Let $y=U^H x$, then:
 
   $
@@ -250,8 +246,8 @@ with the understanding that $delta x$ and $delta f$ are infinitesimal.
 
 If $f$ is differentiable, we can evaluate the absolute condition number by means of the derivative of $f$. Let $J(x)$ be the matrix whose $i, j$ entry is the partial derivative $partial f_i slash partial x_j$, evaluated at $x$. The definition of derivative gives us, $delta f #sym.approx J(x)delta x$, with equality in the limit $norm(delta x) arrow 0$. The absolute condition number is then:
 $ K=norm(J(x)) $
-=== Relative Condition Number
 
+=== Relative Condition Number
 When we are concerned with relative changes, we need the notion of relative condition. The _relative condition number_ is defined as:
 $
   K = lim_(delta arrow 0) sup_(norm(delta x) lt.eq delta) (norm(delta f) / (norm(f(x))) slash norm(delta x) / norm(x))
@@ -267,7 +263,6 @@ $ K = norm(J(x)) / (norm(f\x) slash norm(x)) $
 Problem @1 is called _ill-conditioned_ if $K(d)$ is “big” for any admissible datum d (the precise meaning of “small” and “big” is going to change depending on the considered problem).
 
 === Codution of Matrix-Vector Multiplication
-
 Now we come to one of the condition numbers of fundamental importance in numerical linear algebra.
 
 Fix $A in CC^(m times n)$ and consider the problem of computing $A x$ from input $x$; that is, we are going to determine a condition number corresponding to perturbations of $x$ but not $A$. Working directly from the definition of $K$, with $norm(dot)$ denoting an arbitrary vector norm and the corresponding induced matrix norm, we have:
@@ -330,7 +325,6 @@ For that, it is necessary that $d_n arrow d$ and $F_n arrow F$, as $n arrow infi
 $ F_n(x,d) = F_n(x, d) - F(x, d) arrow 0 text("for") n arrow infinity $ <5>
 
 === Relations between Stability and Covergence
-
 The concepts of stability and convergence are strongly connected.
 
 #theorem[
@@ -338,13 +332,10 @@ The concepts of stability and convergence are strongly connected.
 ]
 
 = Sparse matrices
-
 == Sparse matrices storage formats
-
 Sparse matrices are matrices that contain a large number of zero elements. The storage of these matrices can be optimized by using different formats. The most common formats are:
 
 === Coordinate format (COO)
-
 The simplest storage scheme for sparse matrices is the so-called coordinate format. The data structure consists of three arrays:
 + `AA` - all the values of the nonzero elements of $A$ in any order.
 + `JR` - the row indices of the nonzero elements of $A$.
@@ -355,9 +346,7 @@ The simplest storage scheme for sparse matrices is the so-called coordinate form
 ]
 
 === Compressed sparse row (CSR)
-
 The CSR format is similar to COO, where the row indices are compressed and replaced by an array of offsets. The new data structure consists of three arrays:
-
 + `AA` - the real values $a_(i\j)$ sorted row by row, from row 1 to row $n$.
 + `JA` - the column indices of the nonzero elements of $A$.
 + `IA` - the row offsets. contains the pointers to the beginning of each row in the array $A$ and $\JA$. The content of $I\A$ is the position in the arrays $A\A$ and $J\A$ where the row $i$ starts. The length of $I\A$ is $n+1$, with $I\A(n+1)$ containing the total number of nonzero elements in the matrix.
@@ -393,7 +382,6 @@ To create a sparse matrix in the CSR format, we use the `csr_matrix` function, w
 #import "../template.typ": *
 
 = Iterative methods for large linear systems
-
 Given an $n times n$ real matrix $A$ and a real $n$-vector, the problem is: Find $x$ belonging to $R^n$ such that
 
 $ A\x = b $ <problem1>
@@ -401,7 +389,6 @@ $ A\x = b $ <problem1>
 where $bold(x)$ is the exact solution of the linear system $A bold(x) = bold(b)$.
 
 == On the Convergence of Iterative Methods
-
 The basic idea of iterative methods is to construct a sequence of vectors $bold(x^k)$ that enjoy the property of _convergence_
 
 $ bold(x)=lim_(k arrow infinity) bold(x^k) $ <convergence>
@@ -445,7 +432,6 @@ the error at the k-th step of the iteration, the condition for convergence amoun
 ]
 
 == Linear Iterative Methods
-
 A general technique to devise consistent linear iterative methods is based on an additive splitting of the matrix $A$ of the form $A=P−N$, where $P$ and $N$ are two suitable matrices and $P$ is nonsingular. For reasons that will be clear in the later sections, $P$ is called _preconditioning matrix or preconditioner_.
 
 Precisely, given $x^((0))$, one can compute $x^((k))$ for $k gt.eq.slant$, solving the system:
@@ -459,7 +445,6 @@ $ x^((k+1)) = x^((k)) + P^(-1) r^((k)) $ <LinearIterativeMethod2>
 where the residual $r^((k))=b-A x^((k))$ is the vector that measures the error in the approximation $x^((k))$. @LinearIterativeMethod2 outlines the fact that a linear system, with coeﬃcient matrix $P$, must be solved to update the solution at step $k +1$. Thus $P$, besides being nonsingular, ought to be easily invertible, in order to keep the overall computational cost low.
 
 === Jacobi, Gauss-Seidel and Relaxation Methods
-
 #heading(
   level: 4,
   outlined: false,
@@ -529,7 +514,7 @@ where:
 + The eigenvalues of a matrix are the roots of the characteristic polynomial $det(A - lambda I) = 0$.
 + From the Fundamental Theorem of Algebra, an $n times n$ matrix has exactly $n$ eigenvalues, counting multiplicities.
 + Each $lambda_i$ may be real but in general is a complex number
-+ The eigenvalues $lambda_1, lambda_2, dots, lambda_n$may not all have disSnct values
++ The eigenvalues $lambda_1, lambda_2, dots, lambda_n$may not all have distinct values
 + Rayleigh quotient: $lambda_i = (x_i^H A x_i) / (x_i^H x_i)$
 
 == The Power Method
@@ -587,6 +572,9 @@ $
   ))= nu^((k))
 $
 will converge to the dominant eigenvalue $lambda_1$ of $A$. As a consequence, and the convergence will be faster when the ratio $|lambda_2 / lambda_1|$ is smaller.
+
+== Deflation
+
 
 == The Inverse Power Method
 We look for an approximation of the eigenvalue of a matrix $A in CC^(n times n)$ which is _closest_ to a given number $mu in CC$, where $mu in.not sigma(A)$. For this, the power iteration is applied to the matrix $(M_mu)^(-1)=(A - mu I)^(-1)$, yielding the so-called _inverse iteration_ or _inverse power method_. The number $mu$ is called the _shift_ of the method.

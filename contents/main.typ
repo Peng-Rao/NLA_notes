@@ -27,10 +27,19 @@
 
 = Matrix Factorizations
 == Cholesky Factorization
-Let $A in RR^(n times n)$ be a _symmetric and positive definite_ (SPD) matrix. Then, there exists a unique lower triangular matrix $L in RR^(n times n)$ with positive diagonal
+Let $A in RR^(n times n)$ be a _symmetric and positive definite_ (SPD) matrix. Then, there exists a unique upper triangular matrix $R in RR^(n times n)$ with positive diagonal
 entries such that:
-$ A = L^T L $ <CholeskyFactorization>
+$ A = R^T R $ <CholeskyFactorization>
 This factorization is called _Cholesky factorization_.
+#align(center)[
+  #pseudocode-list(line-numbering: none, booktabs: true, title: smallcaps[Cholesky Factorization], line-gap: 1.5em)[
+    + Let $r_11=sqrt(a_11)$.
+    + *For* $k=2, dots$
+      + $r_(i j) = 1 / r_(i i)(a_(i j)- sum_(k=1)^(i-1)r_(k i) r_(k j))$
+      + $r_(i i) = sqrt(a_(i i)- sum_(k=1)^(i-1)r_(k i)^2)$
+  ]
+]
+The computational cost of the Cholesky factorization is $O(n^3 slash 3)$.
 
 = Norms
 The essential notions of *size and distance* in a vector space are captured by norms. These are the _yardsticks_ with which we measure approximations and convergence throughout numerical linear algebra.
@@ -78,6 +87,11 @@ $
 
   is a norm on $RR^n$.
 ]
+
+#theorem("Energy Norm")[
+  Let $A in RR^(n times n)$ is a symmetric positive definite matrix. Then, the _energy norm_ is defined as:
+  $ norm(x)_A = sqrt(bold(x)^T A bold(x)) $
+] <energynorm>
 
 #theorem("Convergence")[
   Let $norm(dot)$ be a norm in a finite dimensional space V. Then:
@@ -189,7 +203,17 @@ A special discussion is deserved by the _2-norm_ or _spectral norm_ for which th
     norm(A)_2 = sup_(x eq.not 0) norm(A x)_2 / norm(x)_2 = sup_(x eq.not 0) norm(x)_2 / norm(x)_2 = 1
   $
 ]
+== Sequences and Series of Matrices
+A sequence of matrices $A^(k)$ is said to _converge_ to a matrix $A in RR^(n times n)$ if
+$ lim_(k arrow infinity) norm(A^(k)-A) = 0 $ <matrix_convergence>
+The choice of the norm does not influence the result since in $RR^(n times n)$ all norms are equivalent.
 
+#theorem("Convergence of Sequences of Matrices")[
+  Let $A$ be a square matrix; then
+  $ lim_(k arrow infinity) A^(k) = 0 arrow.l.r.double rho(A) < 1 $
+] <convergence_matrix>
+
+#pagebreak()
 = Principles of Numerical Mathematics
 == Well-posedness and Condition Number
 Consider the following problem: find $x$ such that:
@@ -201,15 +225,11 @@ where $F$ is a function of $x$ and $d$. And three types of problems can be consi
 + _inverse problem_: given $F$ and $x$, find $d$;
 + _identification problem_: given $x$ and $d$, find $F$.
 
-Problems @1 are well-posed if it admits a _unique_ solution, and the solution depends continuously on the data.
+Problems @1 are *_well-posed_* if it admits a _unique_ solution, and the solution depends continuously on the data.
 
 A problem which does not enjoy the property above is called ill posed or unstable and before undertaking its numerical solution it has to be regularized, that is, it must be suitably transformed into a well-posed problem.
 
 Let $D$ be the set of admissible data, i.e. the set of the values of $d$ in correspondance of which problem @1 admits a unique solution. Continuous dependence on the data means that small perturbations on the data d of $D$ yield “small” changes in the solution $x$.
-
-#example[
-  For example, a _well-posed(well-conditioned)_ problem is one with the property that all small perturbations of $x$ lead to only small changes in $f(x)$. An _ill-posed(ill-conditioned)_ problem is one for which small perturbations of $x$ can lead to large changes in $f(x)$.
-]
 
 Precisely, let $d in D$ and denoted by $delta d$ a perturbation admissible in the sense that $d + delta d in D$ and by $delta x$ the corresponding change in the solution, in such a way that:
 
@@ -225,21 +245,17 @@ $ <3>
 
 The norms used for the data and for the solution may not coincide, whenever $d$ and $x$ represent variables of diﬀerent kinds.
 
-The @3 is however more suitable to express in the following the concept of _numerical stability_, that is, the property that small perturbations on the data yield perturbations of the same order on the solution.
-
-#definition("Condition Number")[
-  For problem @1, we define the _relative conditional number_ to be:
-
-  $ K(d)= sup{(norm(delta x) / norm(x)) / (norm(delta d) / norm(d)), delta d eq.not 0, d+delta d in D} $
-
-  Whenever $d=0$ or $x=0$, it is nessesary to consider the _absolute conditional number_:
-
-  $ K_("abs")(d)= sup{norm(delta x) / norm(delta d), delta d eq.not 0, d+delta d in D} $
+#example("Wellposedness of Linear Systems")[
+  Consider the problem of solving a linear system $A x = b$. The problem is well-posed if it has below two properties:
+  + The problem has a unique solution $x$, which means that the matrix $A$ is invertible.
+  + The solution depends continously on the data.
 ]
+
+The @3 is however more suitable to express in the following the concept of _numerical stability_, that is, the property that small perturbations on the data yield perturbations of the same order on the solution.
 
 === Absolute Condition Number
 Let $delta x$ denote a small perturbation of $x$, and wirte $delta f = f(x + delta x, d) - f(x, d)$. The absolute condition number is then defined as:
-$ k=lim_(delta arrow 0) sup_(norm(delta x) lt.eq delta) norm(delta f) / norm(delta x) $
+$ K_("abs")=lim_(delta arrow 0) sup_(norm(delta x) lt.eq delta) norm(delta f) / norm(delta x) $
 For most problems, the limit of the supremum in this formula can be interpreted as a supremum over all infinitesimal perturbations $delta x$, and in the interest of readability, we shall generally write the formula simply as
 $ K=sup_(delta x) norm(delta f) / norm(delta x) $
 with the understanding that $delta x$ and $delta f$ are infinitesimal.
@@ -330,7 +346,7 @@ The concepts of stability and convergence are strongly connected.
 #theorem[
   If problem @1 is well-posed, a _necessary_ condition in order for the numerical problem @problem2 to be convergent is that it is stable.
 ]
-
+#pagebreak()
 = Sparse matrices
 == Sparse matrices storage formats
 Sparse matrices are matrices that contain a large number of zero elements. The storage of these matrices can be optimized by using different formats. The most common formats are:
@@ -342,7 +358,7 @@ The simplest storage scheme for sparse matrices is the so-called coordinate form
 + `JC` - the column indices of the nonzero elements of $A$.
 
 #example("Coordinate format")[
-  #image("../figures/coo.png")
+  #image("../figures/coo.png", height: auto)
 ]
 
 === Compressed sparse row (CSR)
@@ -382,11 +398,14 @@ To create a sparse matrix in the CSR format, we use the `csr_matrix` function, w
 #import "../template.typ": *
 
 = Iterative methods for large linear systems
-Given an $n times n$ real matrix $A$ and a real $n$-vector, the problem is: Find $x$ belonging to $R^n$ such that
+Given an $n times n$ real matrix $A$ and a real $n$-vector, the problem is: Find $bold(x)$ belonging to $RR^n$ such that
 
-$ A\x = b $ <problem1>
+$ A bold(x) = bold(b) $ <problem1>
 
-where $bold(x)$ is the exact solution of the linear system $A bold(x) = bold(b)$.
+where $bold(x)$ is the exact solution of the linear system $A bold(x) = bold(b)$. In such cases existence and uniqueness of the solution are ensured if one of the following (equivalent) hypotheses holds:
++ $A$ is invertible
++ rank($A$)=n;
++ the homogeneous system $A bold(x)=0$ admits only the null solution.
 
 == On the Convergence of Iterative Methods
 The basic idea of iterative methods is to construct a sequence of vectors $bold(x^k)$ that enjoy the property of _convergence_
@@ -403,25 +422,33 @@ where $B$ is an $n times n$ square matrix called the _iteration matrix_ and $bol
 
 having denoted by $B$ an $n × n$ square matrix called the iteration matrix and by $bold(f)$ a vector that is obtained from the right hand side $bold(b)$.
 
-#definition[
-  An iterative method of the form @IterativeMethod is said to be _convergent_ with @convergence if $bold(f)$ and $B$ are such that $bold(x)=bold(B\x)+bold(f)$. Equivalently,
+#definition("Consistent")[
+  An iterative method of the form @IterativeMethod is said to be _consistent_ with @problem1 if $bold(f)$ and $B$ are such that $bold(x)=bold(B\x)+bold(f)$. Equivalently,
 
   $ bold(f)=(1-B)A^(-1) bold(b) $
+
+  Having denoted by
+
+  $ bold(e)^((k)) = bold(x)^((k)) - bold(x) $ <error>
+
+  the error at the k-th step of the iteration, the condition for convergence amounts to requiring that $lim_(k arrow infinity) bold(e^k)=0$ for any choice of the initial datum $bold(x)^0$.
+
+  Consistency alone does not suﬃce to ensure the convergence of the iterative method @IterativeMethod.
 ]
 
-Having denoted by
 
-$ bold(e)^((k)) = bold(x)^((k)) - bold(x) $ <error>
 
-the error at the k-th step of the iteration, the condition for convergence amounts to requiring that $lim_(k arrow infinity) bold(e^k)=0$ for any choice of the initial datum $bold(x)^0$.
-
-#theorem[
+#theorem("Convergence of Iterative method")[
   Let @IterativeMethod be a consistent method. Then, the sequence of vectors ${x^(k)}$ converges to the solution of @problem1 for any choice of $x^((0)) "iff" rho(B) < 1$.\
-  *Proof*. From @error and the consistency assumption, the recursive relation $bold(e)^(k+1)=B\e^(k)$ is obtained. Therefore,
+  *Proof*. From @error and the consistency assumption, the recursive relation $bold(e)^(k+1)=B\e^(k)$ is obtained:
+  $
+    bold(e)^(k+1)= x^(k+1) - x^(k)= B x^(k)+f - (B x+f) =B e^(k)
+  $
+  Therefore,
   $
     e^((k))=B^k e^((0)), forall k=0,1, dots
   $
-  Thus, thanks to Theorem 1.5, it follows that $lim_(k arrow infinity) B^k e^0=0$ for any $e^((0)) "iff" rho(B) < 1$.
+  Thus, thanks to @convergence_matrix, it follows that $lim_(k arrow infinity) B^k e^0=0$ for any $e^((0)) "iff" rho(B) < 1$.
 ]
 
 #definition[
@@ -430,6 +457,36 @@ the error at the k-th step of the iteration, the condition for convergence amoun
   + $norm(B)^(1 slash m)$ the _average convergence_ factor after m steps;
   + $R_m(B)=-1/ m log norm(B^m)$ the _average convergence rate_ after m steps.
 ]
+
+== Stopping Criteria
+The convergence of an iterative method is monitored by means of a stopping criterion. We can easily introduce the following criteria:
+$
+  norm(bold(x)-bold(x^((k)))) / norm(bold(x^((k)))) lt.eq epsilon
+$
+Unfortunately, the exact solution $bold(x)$ is not known, we are trying to convert the problem into a residual-based stopping criterion.
+\ *Residual-base stopping criteria*: The iteration is stopped when the residual $bold(r^((k)))=bold(b)-A bold(x^((k)))$ is small enough:
+$
+  norm(bold(x)-bold(x^((k)))) / norm(bold(x^((k)))) lt.eq K(
+    A
+  ) norm(bold(r^((k)))) / norm(bold(b)) arrow.r.double.long norm(bold(r^((k)))) / norm(bold(b)) lt.eq epsilon
+$
+This is a good criteria whenever the condition number $K(A)$ is not too large. If the condition number is large, the residual-based stopping criterion may be too stringent. To make the constant $K(A)$ smaller in the stopping criterion, there is a method called _preconditioning_:
+$
+  norm(bold(x)-bold(x^((k)))) / norm(bold(x^((k)))) lt.eq K(
+    P^(-1) A
+  ) norm(z^((k))) / norm(bold(b)) arrow.r.double.long norm(z^((k))) / norm(bold(b)) lt.eq epsilon
+$
+where $z^((k))= P^(-1) bold(r)^k$.
+
+\ *Distance between consecutive iterates*: The iteration is stopped when the distance between consecutive iterates is small enough, define the distance $bold(delta)^((k))=bold(x)^((k+1))-bold(x)^((k))$, then the stopping criterion is:
+$
+  norm(bold(delta)^((k))) lt.eq epsilon
+$
+The relation between the true error and the distance between consecutive iterates is given by:
+$
+  norm(bold(e)^((k))) lt.eq norm(bold(delta)^((k))) / (1-rho(B))
+$
+Therefore this is a “good” stopping criterion only if $rho(B) << 1$.
 
 == Linear Iterative Methods
 A general technique to devise consistent linear iterative methods is based on an additive splitting of the matrix $A$ of the form $A=P−N$, where $P$ and $N$ are two suitable matrices and $P$ is nonsingular. For reasons that will be clear in the later sections, $P$ is called _preconditioning matrix or preconditioner_.
@@ -442,7 +499,9 @@ The iteration matrix of method @LinearIterativeMethod is $B=P^(-1)N$ and the vec
 
 $ x^((k+1)) = x^((k)) + P^(-1) r^((k)) $ <LinearIterativeMethod2>
 
-where the residual $r^((k))=b-A x^((k))$ is the vector that measures the error in the approximation $x^((k))$. @LinearIterativeMethod2 outlines the fact that a linear system, with coeﬃcient matrix $P$, must be solved to update the solution at step $k +1$. Thus $P$, besides being nonsingular, ought to be easily invertible, in order to keep the overall computational cost low.
+where the residual $ r^((k))=b-A x^((k)) $ is the vector that measures the error in the approximation $x^((k))$. @LinearIterativeMethod2 outlines the fact that a linear system, with coeﬃcient matrix $P$, must be solved to update the solution at step $k +1$. Thus $P$, besides being nonsingular, ought to be easily invertible, in order to keep the overall computational cost low.(Notice that, if $P$ were equal to $A$ and $N=0$, method @LinearIterativeMethod2 would converge in one iteration, but at the same cost of a direct method.
+
+Let us mention two results that ensure convergence of the iteration @LinearIterativeMethod2, provided suitable conditions on the splitting of A are fulfilled.
 
 === Jacobi, Gauss-Seidel and Relaxation Methods
 #heading(
@@ -450,7 +509,6 @@ where the residual $r^((k))=b-A x^((k))$ is the vector that measures the error i
   outlined: false,
   "Jacobi Method and Over-Relaxation",
 )
-
 If the diagonal entries of $A$ are nonzero, we can single out in each equation the corresponding unknown, obtaining the equivalent linear system.
 
 $
@@ -496,9 +554,130 @@ This method is consistent if any $omega eq.not 0$ and for $omega=1$ it coincides
   outlined: false,
   "The Gauss Seidel method",
 )
+The Gauss-Seidel method diﬀers from the Jacobi method in the fact that at the $k+1$th step the available values of $x_i^((k+1))$ are being used to update the solution:
+$
+  x_i^((k+1))= (b_i - sum_(j=1)^(i-1) a_(i\j) x_j^((k+1)) - sum_(j=i+1)^(n) a_(i\j) x_j^((k))) / a_(i\i), i=1, dots, n
+$
+This method amounts to performing the following splitting for $A$:
+$
+  P = D - E, N = F
+$
+and the iteration matrix is:
+$
+  B_(G S) = (D - E)^(-1) F
+$
 
-#import "../template.typ": *
+=== The stationary Richardson method
+Devoted by
+$
+  R_p = I - P^(-1) A
+$
+the iteration matrix associated with @LinearIterativeMethod2. Proceeding as in the case of relaxation methods, @LinearIterativeMethod2 can be generalized introducing a relaxation (or acceleration) parameter $alpha$. This leads to the following _stationary Richardson method_.
+$
+  bold(x)^((k+1)) = bold(x)^((k)) + alpha P^(-1) bold(r)^((k)), k gt.eq 0
+$
+More generally, allowing $alpha$ to depend on the iteration index, _the nonstationary Richardson method or semi-iterative method_ is given by
+$
+  bold(x)^((k+1)) = bold(x)^((k)) + alpha^((k)) P^(-1) bold(r)^((k)), k gt.eq 0
+$ <NonstationaryRichardsonMethod>
+The iteration matrix at the k-th step for @NonstationaryRichardsonMethod is
+$
+  B_(R) = I - alpha_k P^(-1) A
+$
+with $alpha_k=alpha$ in the stationary case. If $P = I$, the family of methods @NonstationaryRichardsonMethod will be called _nonpreconditioned_.The Jacobi and Gauss-Seidel methods can be regarded as stationary Richardson methods with $P = D$ and $P = D- E$, respectively.
 
+We can rewrite @NonstationaryRichardsonMethod in a form of greater interest for computation. Letting $bold(z)^((k))=P^(-1) bold(r)^((k))$(the so-called _preconditioned residual_), we have $bold(x)^((k+1))=bold(x)^((k))+alpha_k bold(z)^((k))$ and $bold(r)^((k+1))=bold(r)^((k))-alpha_k A bold(z)^((k))$.
+
+// To summarize, a nonstationary Richardson method requires at each $k+1$th step the following operations:
+// + solve the linear system $P bold(z)^((k))=bold(r)^((k))$
+// + compute the acceleration parameter $alpha_k$
+// + update the solution $bold(x)^((k+1))=bold(x)^((k))+alpha_k bold(z)^((k))$
+// + update the residual $bold(r)^((k+1))=bold(r)^((k))-alpha_k A bold(z)^((k))$
+#theorem("Convergence")[
+  Assume that P is a nonsingular matrix and that $P^(-1)A$ has positive real eigenvalues, ordered in such a way that $lambda_1 gt.eq lambda_2 gt.eq dots gt.eq lambda_n gt 0$. Then, the stationary Richardson method converges if and only if $0 lt.eq alpha lt.eq 2 / lambda_1$. Moreover, letting
+  $
+    alpha_("opt") = 2 / (lambda_1 + lambda_n)
+  $
+  the spectral radius of the iteration matrix $R_alpha$ is minimum if $alpha=alpha_("opt")$, with
+  $
+    rho_("opt") = min_{alpha} rho(R_alpha) = (lambda_1 - lambda_n) / (lambda_1 + lambda_n)
+  $
+]
+#example("Preconditioned Stational Richardson Method")[
+  #pseudocode-list(
+    line-numbering: none,
+    booktabs: true,
+    line-gap: 1em,
+    title: smallcaps[Preconditioned Stational Richardson Method],
+  )[
+    + $bold(x)^0=$initial guess
+    + *For* $k=0,1, dots$
+      + Compute $alpha_("opt")=2 / (lambda_min (P^(-1)A) + lambda_max (P^(-1)A))$
+      + Update the residual: $bold(r)^((k))=bold(b)-A bold(x)^((k))$
+      + Solve the linear system $P bold(z)^((k))=bold(r)^((k))$
+      + Update the solution: $bold(x)^((k+1))=bold(x)^((k))+alpha_("opt") bold(z)^((k))$
+  ]
+]
+
+=== The Gradient Method
+In the special case of symmetric and positive definite matrices, however, the optimal acceleration parameter can be dynamically computed at each step $k$ as follows.
+
+We first notice that, for such matrices, solving system @LinearIterativeMethod2 is equivalent to minimizing the quadratic form
+$
+  Phi(bold(y))=1 / 2 bold(y)^T A bold(y) - bold(y)^T b
+$
+which is called the _energy of system_, Indeed, the gradient of $Phi$ is given by
+$
+  nabla Phi(bold(y))= 1 / 2 (A + A^T) bold(y) - bold(b) = A bold(y) - bold(b)
+$ <gradient>
+As a consequence, if $nabla Phi(bold(x))=0$, then $bold(x)$ is a solution of the original system. Conversely, if x is a solution, then
+$
+  Phi(bold(y)) = Phi(bold(x) + bold(y-x))=Phi(bold(x)) + 1 / 2 (bold(y-x))^T A (bold(y-x))
+$
+and thus, for any $bold(y)$, the value of $Phi$ is minimized at $bold(x)$.
+Notice that the previous relation is equivalent to
+$
+  1 / 2 norm(bold(y-x))^2_A = Phi(bold(y)) - Phi(bold(x))
+$
+where $norm(bold(dot))_A$ is the energy norm, defined in @energynorm.
+
+The problem is thus to determine the minimizer $bold(x)$ of $Phi$ by starting from a point $bold(x)^0$, and, consequently, to select suitable directions along which moving to get as close as possible to the solution $bold(x)$. The optimal direction, that joins the starting point $bold(x)^((0))$ to the solution point $bold(x)$, is obviously unknown a priori. Therefore, we must take a step from $bold(x)^((0))$ along a given direction $bold(p)_0$ and then fix along this latter a new point $bold(x)^((1))$ from which to iterate the process until convergence.
+
+Precisely, at the generic step $k$, $bold(x)^((k+1))$ is computed as
+$
+  bold(x)^((k+1)) = bold(x)^((k)) + alpha_k bold(p)^((k))
+$
+where $alpha_k$ is the value which fixes the length of the step along the direction $bold(p)^((k))$.
+
+The most natural idea is to take as $bold(p)^((k))$ the direction of maximum descent along the functional $Phi$ in $bold(x)^((k))$, which is given by $-nabla Phi(bold(x)^((k)))$. This yields the gradient method, also called steepest descent method.
+
+Due to @gradient, $nabla Phi(bold(x)^((k)))=A bold(x)^((k))-bold(b)=-bold(r)^((k))$ so that the direction of the gradient of $Phi$ coincides with the residual $bold(r)^((k))$. So it can be immediately computed using the current iterate.
+
+To compute the parameter $alpha^((k))$ let us write explicitly $nabla(bold(x)^((k+1)))$ as a function of a parameter $alpha$
+$
+  nabla Phi(bold(x)^((k+1))) = nabla Phi(bold(x)^((k)) + alpha bold(r)^((k)))
+$
+Diﬀerentiating with respect to α and setting it equal to zero yields the desired value of $alpha_k$
+$
+  alpha_k = (bold(r)^(k)^T bold(r)^((k))) / (bold(r)^(k)^T A bold(r)^((k)))
+$
+#align(center)[
+  #pseudocode-list(
+    line-numbering: none,
+    booktabs: true,
+    line-gap: 1.3em,
+    title: smallcaps[Gradient Method],
+  )[
+    + Given $bold(x)^((0))$, compute the residual: $bold(r)^((0))=bold(b)-A bold(x)^((0))$
+    + *While*(Stopping criterion is not satisfied)
+      + Compute parameter $alpha_k = (bold(r)^(k)^T bold(r)^((k))) / (bold(r)^(k)^T A bold(r)^((k)))$
+      + Update the solution: $bold(x)^((k+1))=bold(x)^((k)) + alpha_k bold(r)^((k))$
+      + Update the residual: $bold(r)^((k+1))=bold(r)^((k)) - alpha_k A bold(r)^((k))$
+  ]
+]
+=== The Conjugate Gradient Method
+
+#pagebreak()
 = Numerical methods for overdetermined linear systems of equations
 #pagebreak()
 = Solving large scale eigenvalue problems
@@ -508,7 +687,7 @@ $ A x = lambda x $ <eigenproblem>
 where:
 + The vector x is the _eigenvector_, And the scalar $lambda$ is the _eigenvalue_
 + The set of all the eigenvalues of a matrix $A$ is called the _spectrum_ of $A$, denoted by $sigma(A)$.
-+ The maximum modulus of all the eigenvalues is called the spectral radius of $A$ and is denoted by $rho(A) = max_{lambda in sigma(A)} |lambda|$.
++ The maximum modulus of all the eigenvalues is called the _spectral radius_ of $A$ and is denoted by $rho(A) = max_{lambda in sigma(A)} |lambda|$.
 
 *Remarks*
 + The eigenvalues of a matrix are the roots of the characteristic polynomial $det(A - lambda I) = 0$.

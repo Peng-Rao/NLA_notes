@@ -27,7 +27,7 @@
 
 = Matrix Decompositions and Factorization
 == QR Factorization
-Let $A in RR(m times n)$ be a rectangu;ar matrix, then
+Let $A in RR(m times n)$ be a rectangular matrix, then
 $ A = Q R $ <QRFactorization>
 where $Q in RR(m times m)$ is an orthogonal matrix and $R in RR(m times n)$ is an upper trapezoidal matrix.
 
@@ -445,7 +445,7 @@ having denoted by $B$ an $n × n$ square matrix called the iteration matrix and 
 
   $ bold(e)^((k)) = bold(x)^((k)) - bold(x) $ <error>
 
-  the error at the k-th step of the iteration, the condition for convergence amounts to requiring that $lim_(k arrow infinity) bold(e^k)=0$ for any choice of the initial datum $bold(x)^0$.
+  the error at the k-th step of the iteration, the condition for convergence amounts to requiring that $lim_(k arrow infinity) norm(bold(e^k))=0$ for any choice of the initial datum $bold(x)^0$.
 
   Consistency alone does not suﬃce to ensure the convergence of the iterative method @IterativeMethod.
 ]
@@ -492,7 +492,7 @@ $
 $
 where $z^((k))= P^(-1) bold(r)^k$.
 
-\ *Distance between consecutive iterates*: The iteration is stopped when the distance between consecutive iterates is small enough, define the distance $bold(delta)^((k))=bold(x)^((k+1))-bold(x)^((k))$, then the stopping criterion is:
+\ *Distance between consecutive iterations*: The iteration is stopped when the distance between consecutive iterates is small enough, define the distance $bold(delta)^((k))=bold(x)^((k+1))-bold(x)^((k))$, then the stopping criterion is:
 $
   norm(bold(delta)^((k))) lt.eq epsilon
 $
@@ -581,7 +581,7 @@ $
   B_(G S) = (D - E)^(-1) F
 $
 
-=== The stationary Richardson method
+== Stationary and Nonstationary Iterative Methods
 Devoted by
 $
   R_p = I - P^(-1) A
@@ -602,11 +602,11 @@ with $alpha_k=alpha$ in the stationary case. If $P = I$, the family of methods @
 
 We can rewrite @NonstationaryRichardsonMethod in a form of greater interest for computation. Letting $bold(z)^((k))=P^(-1) bold(r)^((k))$(the so-called _preconditioned residual_), we have $bold(x)^((k+1))=bold(x)^((k))+alpha_k bold(z)^((k))$ and $bold(r)^((k+1))=bold(r)^((k))-alpha_k A bold(z)^((k))$.
 
-// To summarize, a nonstationary Richardson method requires at each $k+1$th step the following operations:
-// + solve the linear system $P bold(z)^((k))=bold(r)^((k))$
-// + compute the acceleration parameter $alpha_k$
-// + update the solution $bold(x)^((k+1))=bold(x)^((k))+alpha_k bold(z)^((k))$
-// + update the residual $bold(r)^((k+1))=bold(r)^((k))-alpha_k A bold(z)^((k))$
+To summarize, a nonstationary Richardson method requires at each $k+1$th step the following operations:
++ solve the linear system $P bold(z)^((k))=bold(r)^((k))$
++ compute the acceleration parameter $alpha_k$
++ update the solution $bold(x)^((k+1))=bold(x)^((k))+alpha_k bold(z)^((k))$
++ update the residual $bold(r)^((k+1))=bold(r)^((k))-alpha_k A bold(z)^((k))$
 #theorem("Convergence")[
   Assume that P is a nonsingular matrix and that $P^(-1)A$ has positive real eigenvalues, ordered in such a way that $lambda_1 gt.eq lambda_2 gt.eq dots gt.eq lambda_n gt 0$. Then, the stationary Richardson method converges if and only if $0 lt.eq alpha lt.eq 2 / lambda_1$. Moreover, letting
   $
@@ -624,14 +624,39 @@ We can rewrite @NonstationaryRichardsonMethod in a form of greater interest for 
     line-gap: 1em,
     title: smallcaps[Preconditioned Stational Richardson Method],
   )[
-    + $bold(x)^0=$initial guess
+    + Given arbitrary $bold(x)^0=$, Let $bold(r)^0=bold(b)-A bold(x)^0$
     + *For* $k=0,1, dots$
       + Compute $alpha_("opt")=2 / (lambda_min (P^(-1)A) + lambda_max (P^(-1)A))$
-      + Update the residual: $bold(r)^((k))=bold(b)-A bold(x)^((k))$
       + Solve the linear system $P bold(z)^((k))=bold(r)^((k))$
       + Update the solution: $bold(x)^((k+1))=bold(x)^((k))+alpha_("opt") bold(z)^((k))$
+      + Update the residual: $bold(r)^((k+1))=bold(r)^((k))-alpha_("opt") A bold(z)^((k))$
   ]
 ]
+
+=== Preconditioning Matrices
+All the methods introduced in the previous sections can be cast in the form @IterativeMethod , so that they can be regarded as being methods for solving the system
+$
+  (I-B) bold(x)=bold(f)=P^(-1) bold(b)
+$
+On the other hand, since $B=P^(-1)N$, linear system $A bold(x) =bold(b)$ can be equivalently rewrited as
+$
+  P^(-1) A bold(x)=P^(-1) bold(b)
+$
+The latter is the preconditioned system, being $P$ the preconditioning matrix or left preconditioner. Right and centered preconditioners can be introduced as well,
+$
+  A P^(-1) bold(y)=bold(b), bold(y)=P bold(x)
+$
+or
+$
+  P^(-1)_L A P^(-1)_R bold(y)=P^(-1)_L bold(b), bold(y)=P_R bold(x)
+$
+There are _point preconditioners_ and _block preconditioners_, depending on whether they are applied to the single entries of $A$ or to the blocks of a partition of $A$. The iterative methods considered so far correspond to fixed-point iterations on a left-preconditioner system. Computing the inverse of $P$ is not mandatory; actually, the role of P is to "precondition" the residual $bold(r)^((k))$.
+
+Since the preconditioner acts on the spectral radius of the iteration matrix, it would be useful to pick up, for a given linear system, an _optimal preconditioner_, a preconditioner which is able to make the number of iterations required for convergence independent of the size of the system.
+
+There is not a general roadmap to devise optimal preconditioners. However, an established "rule of thumb" is that $P$ is a good preconditioner for $A$ if $P^(-1) A$ is near to being a normal matrix and if its eigenvalues are clustered within a sufficiently samll region of the complex field. The choice of a preconditioner must also be guided by practical considerations, noticeably, its computational cost and its memory requirements.
+
+Preconditioners can be divided into two main categories: algebraic and functional preconditioners, the diﬀerence being that the algebraic preconditioners are independent of the problem that originated the system to be solved, and are actually constructed via algebraic procedures, while the functional preconditioners take advantage of the knowledge of the problem and are constructed as a function of it.
 
 === The Gradient Method
 In the special case of symmetric and positive definite matrices, however, the optimal acceleration parameter can be dynamically computed at each step $k$ as follows.
@@ -644,7 +669,7 @@ which is called the _energy of system_, Indeed, the gradient of $Phi$ is given b
 $
   nabla Phi(bold(y))= 1 / 2 (A + A^T) bold(y) - bold(b) = A bold(y) - bold(b)
 $ <gradient>
-As a consequence, if $nabla Phi(bold(x))=0$, then $bold(x)$ is a solution of the original system. Conversely, if x is a solution, then
+As a consequence, if $nabla Phi(bold(x))=0$, then $bold(x)$ is a solution of the original system. Conversely, if $bold(x)$ is a solution, then
 $
   Phi(bold(y)) = Phi(bold(x) + bold(y-x))=Phi(bold(x)) + 1 / 2 (bold(y-x))^T A (bold(y-x))
 $
@@ -665,11 +690,13 @@ where $alpha_k$ is the value which fixes the length of the step along the direct
 
 The most natural idea is to take as $bold(p)^((k))$ the direction of maximum descent along the functional $Phi$ in $bold(x)^((k))$, which is given by $-nabla Phi(bold(x)^((k)))$. This yields the gradient method, also called steepest descent method.
 
-Due to @gradient, $nabla Phi(bold(x)^((k)))=A bold(x)^((k))-bold(b)=-bold(r)^((k))$ so that the direction of the gradient of $Phi$ coincides with the residual $bold(r)^((k))$. So it can be immediately computed using the current iterate.
+Due to @gradient, $nabla Phi(bold(x)^((k)))=A bold(x)^((k))-bold(b)=-bold(r)^((k))$ so that the direction of the gradient of $Phi$ coincides with the residual $bold(r)^((k))$. So it can be immediately computed using the current iterate. This shows that the gradient method, as well as the nonstationary Richardson method with $P=I$, moves at each step $k$ along the direction of the residual $bold(r)^((k))$.
 
-To compute the parameter $alpha^((k))$ let us write explicitly $nabla(bold(x)^((k+1)))$ as a function of a parameter $alpha$
+To compute the parameter $alpha^((k))$ let us write explicitly $Phi(bold(x)^((k+1)))$ as a function of a parameter $alpha$
 $
-  nabla Phi(bold(x)^((k+1))) = nabla Phi(bold(x)^((k)) + alpha bold(r)^((k)))
+  Phi(bold(x)^((k+1))) = 1 / 2 (bold(x)^((k)) + alpha bold(r)^((k)))^T A (bold(x)^((k)) + alpha bold(r)^((k))) - (
+    bold(x)^((k)) + alpha bold(r)^((k))
+  )^T bold(b)
 $
 Diﬀerentiating with respect to α and setting it equal to zero yields the desired value of $alpha_k$
 $
@@ -694,6 +721,46 @@ The gradient method consists essentially of two phases: choosing a direction $bo
 $
   alpha_k = (bold(p)^(k)^T bold(r)^((k))) / (bold(p)^(k)^T A bold(p)^((k)))
 $
+#align(center)[
+  #pseudocode-list(
+    line-numbering: none,
+    booktabs: true,
+    line-gap: 1.5em,
+    title: smallcaps[Conjugate Gradient Method],
+  )[
+    + Given $bold(x)^((0))$, compute $bold(r)^((0))=bold(b)-A bold(x)^((0)), bold(p)^((0))=bold(r)^((0))$
+    + *While*(Stopping criterion is not satisfied)
+      + Compute step lenght $alpha_k = (bold(p)^(k)^T bold(r)^((k))) / (bold(p)^(k)^T A bold(p)^((k)))$
+      + Update the solution: $bold(x)^((k+1))=bold(x)^((k)) + alpha_k bold(p)^((k))$
+      + Update the residual: $bold(r)^((k+1))=bold(r)^((k)) - alpha_k A bold(p)^((k))$
+      + Compute the conjugate coefficient $beta_k = ((A bold(p)^((k)))^T bold(r)^((k+1))) / ((A bold(p)^((k)))^T bold(p)^((k)))$
+      + Update the direction: $bold(p)^((k+1))=bold(r)^((k+1)) - beta_k bold(p)^((k))$
+  ]
+]
+
+=== The Preconditioned Conjugate Gradient Method
+If $P$ is a symmetric and positive definite matrix, the preconditioned conjugate gradient method(PCG) consists of applying the CG method to the preconditioned system:
+$
+  P^(-1 / 2) A P^(-1 / 2) bold(y)=P^(-1 / 2) bold(b), "with" bold(y)=P^(-1 / 2) bold(x)
+$
+
+#align(center)[
+  #pseudocode-list(
+    line-numbering: none,
+    booktabs: true,
+    line-gap: 1.5em,
+    title: smallcaps[Preconditioned Conjugate Gradient Method],
+  )[
+    + Given $bold(x)^((0))$, compute $bold(r)^((0))=bold(b)-A bold(x)^((0)), bold(z)^((0))=P^(-1) bold(r)^((0)), bold(p)^((0))=bold(z)^((0))$
+    + *While*(Stopping criterion is not satisfied)
+      + Compute step length $alpha_k = (bold(p)^(k)^T bold(r)^((k))) / (bold(p)^(k)^T A bold(p)^((k)))$
+      + Update the solution: $bold(x)^((k+1))=bold(x)^((k)) + alpha_k bold(p)^((k))$
+      + Update the residual: $bold(r)^((k+1))=bold(r)^((k)) - alpha_k A bold(p)^((k))$
+      + Solve the preconditioned system: $P bold(z)^((k+1))=bold(r)^((k+1))$
+      + Compute the conjugate coefficient $beta_k = (bold(z)^(k+1)^T bold(r)^((k+1))) / (bold(z)^(k+1)^T bold(z)^((k)))$
+      + Update the direction: $bold(p)^((k+1))=bold(z)^((k+1)) + beta_k bold(p)^((k))$
+  ]
+]
 == Methods Based on Krylov Subspace Iterations
 #definition("Krylov Subspace")[
   Given a nonsingular matrix $A in RR(n times n)$ and $bold(y) in RR^n$, $bold(y) eq.not bold(0)$, the $m$th Krylov subspace $K_m (A, bold(y))$ generated by $A$ and $bold(y)$ is
@@ -701,9 +768,30 @@ $
     K_m (A, bold(y)) = "span" {bold(y), A bold(y), A^2 bold(y), dots, A^(m-1) bold(y)}
   $
 ]
+
+Consider the Richardson method @NonstationaryRichardsonMethod with $P=I$; the residual at the $k$-th step can be related to the initial residual as
+$
+  bold(r)^((k))= product_(j=0)^(k-1) (I - alpha_j A) bold(r)^((0))
+$ <kry_residual>
+So start at $bold(r)^((k))=p_k A bold(r)^((0))$, where $p_k (A)$ is a polynomial in $A$ of degree $k$.
+
+In an analogous manner as for @kry_residual, it is seen that the iterate $bold(x)^((k))$ of the Richardson method is given by
+$
+  bold(x)^((k)) = bold(x)^((0)) + sum_(j=0)^(k-1) alpha_j bold(r)^((j))
+$
+so that $bold(x)^((k))$ belongs to the following space
+$
+  W_k = {bold(v)=bold(x)^((0))+bold(y), bold(y) in K_k (A, bold(r)^((0)))}
+$
+In the nonpreconditioned Richardson method we are thus looking for an approximate solution to $bold(x)$ in the space $W_k$. More generally, we can think of devising methods that search for approximate solutions of the form
+$
+  bold(x)^((k)) = bold(x)^((0)) + q_(k-1) (A) bold(r)^((0))
+$ <kry_solution>
+where $q_(k-1)$ is polynomial selected in such a way that $bold(x)^((k))$ be, in a sense that must be made precise, the best approximation of $bold(x)$ in $W_k$. A method that looks for a solution of the form @kry_residual is called a _Krylov subspace method_.
+
+
 #pagebreak()
-= Numerical methods for overdetermined linear systems of equations
-#pagebreak()
+
 = Solving large scale eigenvalue problems
 == Eigenvalues and Eigenvectors
 Given a square matrix $A in CC^(n times n)$, find a scalar $lambda$ and a nonzero vector $x in CC^n$ such that:
@@ -722,10 +810,10 @@ where:
 
 == The Power Method
 Let $A in CC^(n times n)$ be a diagonalizable matrix and let $X in CC^(n times n)$ be the matrix of its eigenvectors $bold(x_i)$. for $i=1, dots, n$. Let us also suppose that the eigenvalues of $A$ are ordered as
-$ |lambda_1| < |lambda_2| lt.eq dots lt.eq |lambda_n| $.
+$ |lambda_1| > |lambda_2| gt.eq dots gt.eq |lambda_n| $
 Where $lambda_1$ has algebraic multiplicity equal to 1. Under these assumptions, $lambda_1$, is called the _dominant eigenvalue_ of $A$.
 
-Given an arbitrary initial vector $bold(q)_0 in CC^n$ with unitary Euclidean norm, consider for $k=1,2, dots$ the following iteration based on the computation of powers ofmatrices, commonly known as the _power method_:
+Given an arbitrary initial vector $bold(q)_0 in CC^n$ with unitary Euclidean norm, consider for $k=1,2, dots$ the following iteration based on the computation of powers of matrices, commonly known as the _power method_:
 $
   bold(z)^((k)) =& A bold(q)^((k-1)) \
   bold(q)^((k)) =& bold(z)^((k)) / norm(bold(z)^((k))) \
@@ -796,7 +884,7 @@ $ <InversePowerMethod>
   #pseudocode-list(line-numbering: none, booktabs: true, title: smallcaps[The Inverse Power Method])[
     + $bold(q)_0=$some initial vector with $norm(q_0)=1$
     + *For* $k=1,2, dots$
-      + Apply $(A - mu I)$: $bold(z)^((k))=(A - mu I) bold(q)^((k-1))$ #h(1cm)
+      + Solve linear equation $(A - mu I)$: $bold(z)^((k))=(A - mu I) bold(q)^((k-1))$ #h(1cm)
       + Normalize: $bold(q)^((k))=bold(z)^((k)) / norm(bold(z)^((k)))$ #h(1cm)
       + Compute Rayleigh quotient: $nu^((k))=bold(q)^((k))^H A bold(q)^((k))$ #h(1cm)
   ]
@@ -839,3 +927,161 @@ $
   dots \
   A bold(q)_n =& beta_(n-1) bold(q)_(n-1) + alpha_n bold(q)_n
 $
+
+#pagebreak()
+= Numerical methods for overdetermined linear systems of equations
+Overdetermined linear systems of equations are systems of equations in which the number of equations is greater than the number of unknowns. In this case, the system is said to be _overdetermined_. When the problems are linear there is a very clean and simple way to find the optimum, if we adopt the sum-of-squares error metric.
+
+== Linear Regression
+If there were no experimental uncertainty the model would fit the data exactly, but since there is noise the best we can do is minimise the error. The problem is:
+$
+  min_(alpha_0, alpha_1) sum_(i=1)^m bold(e)_i^2 = min_(alpha_0, alpha_1) sum_(i=1)^m (alpha_0 + alpha_1 T_i - L_i)^2
+$
+The above problem is equivalent to the following:
+$
+  min_(alpha_0, alpha_1) norm(bold(e))^2 = min_(alpha_0, alpha_1) norm(A bold(alpha) - bold((b)))^2
+$
+with $A = [1, T_1; 1, T_2; dots; 1, T_m]$ and $bold(alpha) = [alpha_0, alpha_1]^T$, $bold(b) = [L_1, L_2, dots, L_m]^T$.
+
+== The Least Squares Solution
+The mathematical problem reads: given a matrix $A in RR^(m times n)$ and a vector $bold(b) in RR^m$, find the vector $bold(x) in RR^n$ such that:
+$
+  A bold(x) = bold(b)
+$
+We notice that generally the above problems has no solution (in the classical sense) unless the right side
+$b$ is an element of range($A$). We need a new concept of solution, the basic approach is to look for an $bold(x)$ that makes $A bold(x)$ close to $bold(b)$.
+
+#definition("Least Squares Solution")[
+  Given a matrix $A in RR^(m times n), m gt.eq n$, we say that $bold(x)^ast in RR^(n)$ is a solution of the linear system $A bold(x) = bold(b)$ in the sense of _least squares_ if
+  $
+    Phi(bold(x)^ast) = min_{bold(y) in RR^n} Phi(bold(y))
+  $
+  where $Phi(bold(y)) = norm(A bold(y) - bold(b))^2$.
+  The problem thus consists of minimising the Euclidean norm of the residual.
+
+  The solution $bold(x)^ast$ can be found by imposing the condition that the gradient of function $Phi$ must be zero at $bold(x)^ast$.
+
+  From the definition we have
+  $
+    nabla Phi(bold(x)^ast) = nabla norm(A bold(x)^ast - bold(b))^2 = 2 A^T (A bold(x)^ast - bold(b)) = 0
+  $
+  from which it follows that $A^T A bold(x)^ast = A^T bold(b)$.
+]
+
+#theorem("Exists and Unique")[
+  The system of normal equations is nonsingular if $A$ has full rank and, in such a case, the least squares solution exists and is unique.
+]
+
+We notice that $B=A^T A$ is a SPD matrix. Thus, in order to solve the normal equations, one could first compute the Cholesky factorization of $B$, by solving two triangular systems:
+$
+  R bold(z) = A^T bold(b) \
+  R bold(x)^ast = bold(z)
+$
+However, $A^T A$ is very badly conditioned and, due to roundoff errors, the computation of $A^T A$ may be affected by a loss of significant digits, with a consequent loss of positive definiteness or nonsingularity of the matrix!
+
+#theorem("Solution in Reduced QR Factorization")[
+  Let $A in RR^(m times n), m gt.eq n$, *be a full rank matrix*, and let $A=hat(Q) hat(R)$ be the reduced QR factorization of $A$. Then the unique solution in the least-square sense of the system $A bold(x) = bold(b)$ is given by
+  $
+    bold(x)^ast = hat(R)^(-1) hat(Q)^T bold(b)
+  $
+  Moreover, the minimum of the function $Phi$ is given by
+  $
+    Phi(bold(x)^ast) = sum_(i=n+1)^m [(Q^T bold(b))_i]^2
+  $
+]
+
+== SVD
+If $A$ does not have full rank, the above solution techniques above fail. In this case if $bold(x)^ast$ is a solution in the least square sense, the vector $bold(x)^ast + bold(z)$, with $bold(z) in N(A)$, is also a solution. We must therefore introduce a further constraint to enforce the uniqueness of the solution. Typically, one requires that $bold(x)^ast$ has minimal Euclidean norm, so that the least squares problem can be formulated as:
+$
+  "Find" bold(x)^ast "such that" norm(A bold(x)^ast-bold(b))^2 lt.eq min_(bold(x) in RR^n) norm(A bold(x)-bold(b))^2
+$ <LeastSquaresProblem>
+This problem is consistent with our formulation. If $A$ has full rank, since in this case the solution in the least-square sense exists and is unique it necessarily must have minimal Euclidean norm. The tool for solving @LeastSquaresProblem is the singular value decomposition(SVD).
+
+#definition("pseudo-inverse")[
+  Suppose that $A in RR^(m times n)$ has rank equal to $r$ and let $A=U Sigma V^T$ be the SVD of $A$. The _pseudo-inverse_ of $A$ is the matrix
+  $
+    A^dagger = V Sigma^dagger U^T
+  $
+  where $Sigma^dagger$ is the $n times m$ matrix obtained by taking the reciprocal of the nonzero singular values of $Sigma$ and transposing the result.
+
+  The matrix $A^dagger$ is also called the _generalized inverse_ of $A$. And if $n=m="rank"(A)$, then $A^dagger = A^(-1)$.
+]
+#pagebreak()
+
+= Direct Methods for Linear Systems
+== Solution of Triangular Systems
+Consider the nonsingular $3 times 3$ *lower triangular* system:
+$
+  mat(l_11, 0, 0; l_21, l_22, 0; l_31, l_32, l_33) vec(x_1, x_2, x_3) = vec(b_1, b_2, b_3)
+$
+Since the matrix is nonsingular, its diagonal entries $l_(i i)$ are nonzero, hence we can solve sequentially for the unknown values $x_i$, as follows:
+$
+  x_1 = b_1 slash l_11 \
+  x_2 = (b_2 - l_21 x_1) slash l_22 \
+  x_3 = (b_3 - l_31 x_1 - l_32 x_2) slash l_33
+$
+This algorithm can be extended to systems $n times n$ and is called _forward substitution_. In the case of system #lower_triangular_system, with $L$ being a nonsingular lower triangular matrix of order $n(n gt.eq 2)$, the method is as follows:
+$
+  x_1 = b_1 slash l_11 \
+  x_n = 1 / l_(i i) (b_i - sum_(j=1)^(i-1) l_(i j) x_j), i = 2, dots, n
+$
+The number of multiplications and divisions to execute the algorithm is equal to $n(n+1) / 2$, while the number of sums and subtractions is $n(n-1) / 2$. The global operation count for the forward substitution is $n^2$.
+
+Similar conclusions can be drawn for a linear system #upper_triangular_system, with $U$ being a nonsingular upper triangular matrix of order $n(n gt.eq 2)$. In this case the algorithm is called _backward substitution_ and in the general case can be written as:
+$
+  x_n = b_n / u_(n n) \
+  x_i = 1 / u_(i i) (b_i - sum_(j=i+1)^(n) u_(i j) x_j), i = n-1, dots, 1
+$
+Its computational cost is the same as that of the forward substitution.
+
+== Guassian Elimination and LU Factorization
+Consider a nonsingular matrix $A in RR^(n times n)$, and suppose that the diagonal entries $a_(i i)$ is nonzero. Introducing the _multiplers_:
+$
+  m_(i 1) = a_(i 1)^((1)) / a_(1 1)^((1)), i = 2, dots, n
+$
+where $a_(i 1)^((1))$ denote the elements of $A^((1))$, it is possible to eliminate the unknown $x_1$ from the rows other than the first one by simply subtracting from row $i$, with $i=2, dots, n$, the first row multiplied by $m_(i 1)$ and doing the same on the right side. If we now define
+$
+  a_(i j)^((2))=&a_(i j)^((1)) - m_(i 1) a_(1 j)^((1)), i, j = 2, dots, n \
+  b_i^((2))=&b_i^((1)) - m_(i 1) b_1^((1)), i = 2, dots, n
+$
+where $b_i ^((1))$ denotes the elements of $bold(b)^((1))$, we have the following system:
+$
+  mat(a_(1 1)^((1)), a_(1 2)^((1)), dots, a_(1 n)^((1)); 0, a_(2 2)^((2)), dots, a_(2 n)^((2)); dots; 0, 0, dots, a_(n n)^((n))) vec(x_1, x_2, dots, x_n) = vec(b_1^((1)), b_2^((2)), dots, b_n^((n)))
+$
+which we denote by $A^((2)) bold(x) = bold(b)^((2))$. that is equivalent to the starting one. Similarly, we can transform the system in such a way that the unknown $x_2$ is eliminated from rows $3, dots, n$,.In general, we end up with the finite sequence of systems
+$
+  A^((k)) bold(x) = bold(b)^((k)), k = 1, dots, n
+$
+where, for $k gt.eq 2$, matrix $A^((k))$ takes the following form:
+$
+  A^((
+    k
+  )) = mat(a_(1 1)^((1)), a_(1 2)^((1)), dots, a_(1 n)^((1)); 0, a_(2 2)^((2)), dots, a_(2 n)^((2)); dots; 0, 0, dots, a_(k k)^((k))) = L^((
+    k
+  )) U^((k))
+$
+It is clear that for $k=n$ we obtain the upper triangular system $U bold(x) = bold(b)^((n))$ which can be solved by backward substitution.
+
+#theorem("Existence and Uniqueness")[
+  Let $A in RR^(n times n)$. The LU factorization of $A$ with $l_(i i) = 1$ for $i=1, dots, n$ exists and is unique iff the principal submatrices $A_i$ of $A$ of order $i=1, dots, n-1$ are nonsingular.
+]
+
+#theorem("Sufficient Condition for Gaussian Elimination")[
+  Let $A in RR^(n times n)$ be a nonsingular matrix. The LU factorization of $A$ exists and is unique if $A$ follows the below two conditions:
+  + $A$ is strictly diagonally dominant by rows / columns
+  + $A$ is symmetric and positive definite
+]
+
+== Pivoting techniques
+As previously pointed out, the GEM process breaks down as soon as a zero pivotal entry is computed. In such case, one needs to resort to the so-called _pivoting techniques_, which amounts to exchanging rows(columns) of the system in such a way that nonzero pivotal elements are always available. So the $L U$ factorization becomes:
+$
+  P A = L U
+$
+where $P$ is a permutation matrix. To solve linear system $A bold(x)=bold(b)$, we solve the equivalent system $P A bold(x)=P bold(b)$, which can be solved by the following two triangular systems:
+$
+  L bold(y) = P bold(b) \
+  U bold(x) = bold(y)
+$
+Moreover, the piovtal element should be as large as possible to avoid round-off errors. In practice:
++ doing pivoting even when it is not strictly needed.
++ Swap the row $k$ with the row $i$, where $i$ is the row with the largest pivotal element in the $k$-th column.

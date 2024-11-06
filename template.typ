@@ -417,3 +417,6 @@
 }
 
 #let pythagorean_theorem = $c^2=a^2+b^2$
+
+#let lower_triangular_system = $L bold(x) = bold(b)$
+#let upper_triangular_system = $U bold(x) = bold(b)$

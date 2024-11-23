@@ -1026,6 +1026,84 @@ This problem is consistent with our formulation. If $A$ has full rank, since in 
 
   The matrix $A^dagger$ is also called the _generalized inverse_ of $A$. And if $n=m="rank"(A)$, then $A^dagger = A^(-1)$.
 ]
+
+== Ways to compute $bold(hat(x))$
+=== Gram-Schmidt with Column Pivoting
+=== Householder Transformation
+The good way to create an exactly orthogonal $Q$ is to build it that way, as Householder did:
+
+#definition("Householder Transformation")[
+  Given a vector $bold(x) in RR^n, bold(x) eq.not 0$, the _Householder transformation_ $H$ is the matrix
+  $
+    H = I - 2 (bold(x) bold(x)^T) / (bold(x)^T bold(x))
+  $
+  Properties:
+  - $H$ is orthogonal: $H^T H = I$
+  - $H$ is symmetric: $H^T = H$
+]
+Let $bold(y) in RR^(n)$. Then the transformation $H bold(y) = bold(y) - 2 (bold(x)^T y) / (bold(x)^T bold(x))$ reflects $bold(y)$ about the hyperplane orthogonal to $bold(x)$. Let's make some special choices for y:
+- If $bold(y)=bold(x)$, then $H bold(x) = bold(x) - 2 (bold(x)^T x) / (bold(x)^T bold(x))=bold(x)-2 bold(x)=bold(x)$
+- If $bold(y)$ is orthogonal to $bold(x)$, then $H bold(y) = bold(y)$
+
+We want to use Householder transformations to obtain $A= Q R$, the idea is to transform the matrix column by column
+
+#figure(
+  image("../figures/hqr.jpg", width: 80%),
+  caption: "Householder QR factorization",
+)
+
+- Define $R:=H_2 H_1 A$, then $R$ is upper triangular and $A=H_1^T H_2^2 R$.
+- Define $Q:=H_1^T H_2^T$, then $Q$ is orthogonal and $A=Q R$.
+
+Let $A in RR^(n times n)$, we choose $H_1$ such that:
+$
+  bold(u)=bold(a)_1=vec(a_1, a_2, dots, a_n) arrow.long^(H_1) bold(v)=vec(alpha, 0, dots, 0)=alpha bold(e)_1
+$
+$bold(u)$ and $bold(v)$ must have same length, so
+$
+  norm(bold(u))_2=norm(bold(v))_2=norm(bold(a_1))_2=abs(alpha)
+$
+Conclusion:
+$
+  alpha = plus.minus norm(bold(a_1))_2, bold(v)=plus.minus norm(bold(a_1))_2 bold(e)_1
+$
+We need to take $H_1=I-2 (bold(x) bold(x)^T) / (bold(x)^T bold(x))$, with
+$
+  bold(x)=bold(u)-bold(v)=bold(a_1) plus.minus norm(bold(a_1))_2 bold(e)_1
+$
+Let us choose the sign such that no cancellation occurs in computing
+$
+  bold(x) := cases(
+    bold(a_1) - norm(bold(a_1))_2 bold(e)_1 "if" a_(1 1) gt 0, \
+    bold(a_1) + norm(bold(a_1))_2 bold(e)_1 "if" a_(1 1) lt 0
+  )
+$
+After the first Householder transformation:
+
+#figure(
+  image("../figures/hqr_1.jpg", width: 50%),
+  caption: "Householder QR factorization, first step",
+)
+Let $B$ be the $(n-1) times (n -1)$ matrix that you get by deleting the first row and column of $A$. We can write $B = (bold(b)_1|bold(b)_2|dots|bold(b)_n)$, where $bold(b)_i$ is the $i$-th column of $B$. Transform the first column $bold(b)_1$ in $beta bold(e)_1$ using the Householder transformation
+$
+  hat(H_2)=I - 2 (hat(bold(x)_2) hat(bold(x)_2)^T) / (hat(bold(x)_2)^T hat(bold(x)_2))
+$
+Define $H_2$ as
+$
+  H_2 = mat(1, 0; 0, hat(H_2)) in RR^(n times n)
+$
+After the second transformation:
+
+#figure(
+  image("../figures/hqr_2.jpg", width: 50%),
+  caption: "Householder QR factorization, second step",
+)
+
+In general, we need $n− 1$ Householder transformations to get $H_(n-1) dots H_2 H_1 A = R$, and hence $A = Q R$.
+
+=== Givens Rotation
+
+
 #pagebreak()
 
 = Direct Methods for Linear Systems

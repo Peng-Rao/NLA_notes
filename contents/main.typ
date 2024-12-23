@@ -252,9 +252,7 @@ $ F(x + delta x, d + delta d) = 0 $ <2>
 Then, we require that:
 
 $
-  exists eta_0 = eta_0(d) > 0, exists K_0=K_0(
-    d
-  ) text("such that") \ text("if") norm(delta d) lt.eq.slant eta_0 text("then") norm(delta x) lt.eq.slant K_0 norm(delta d)
+  exists eta_0 = eta_0(d) > 0, exists K_0=K_0( d ) text("such that") \ text("if") norm(delta d) lt.eq.slant eta_0 text("then") norm(delta x) lt.eq.slant K_0 norm(delta d)
 $ <3>
 
 The norms used for the data and for the solution may not coincide, whenever $d$ and $x$ represent variables of diﬀerent kinds.
@@ -297,9 +295,7 @@ Now we come to one of the condition numbers of fundamental importance in numeric
 
 Fix $A in CC^(m times n)$ and consider the problem of computing $A x$ from input $x$; that is, we are going to determine a condition number corresponding to perturbations of $x$ but not $A$. Working directly from the definition of $K$, with $norm(dot)$ denoting an arbitrary vector norm and the corresponding induced matrix norm, we have:
 $
-  K=sup_(delta x) (norm(A(x+delta x)-A x) / norm(A x)) slash (
-    norm(delta x) / norm(x)
-  ) = sup_(delta x) norm(A delta x) / norm(delta x) slash norm(A x) / norm(x)
+  K=sup_(delta x) (norm(A(x+delta x)-A x) / norm(A x)) slash ( norm(delta x) / norm(x) ) = sup_(delta x) norm(A delta x) / norm(delta x) slash norm(A x) / norm(x)
 $
 that is,
 $
@@ -480,15 +476,11 @@ $
 Unfortunately, the exact solution $bold(x)$ is not known, we are trying to convert the problem into a residual-based stopping criterion.
 \ *Residual based stopping criteria*: The iteration is stopped when the residual $bold(r^((k)))=bold(b)-A bold(x^((k)))$ is small enough:
 $
-  norm(bold(x)-bold(x^((k)))) / norm(bold(x^((k)))) lt.eq K(
-    A
-  ) norm(bold(r^((k)))) / norm(bold(b)) arrow.r.double.long norm(bold(r^((k)))) / norm(bold(b)) lt.eq epsilon
+  norm(bold(x)-bold(x^((k)))) / norm(bold(x^((k)))) lt.eq K( A ) norm(bold(r^((k)))) / norm(bold(b)) arrow.r.double.long norm(bold(r^((k)))) / norm(bold(b)) lt.eq epsilon
 $
 This is a good criteria whenever the condition number $K(A)$ is not too large. If the condition number is large, the residual-based stopping criterion may be too stringent. To make the constant $K(A)$ smaller in the stopping criterion, there is a method called _preconditioning_:
 $
-  norm(bold(x)-bold(x^((k)))) / norm(bold(x^((k)))) lt.eq K(
-    P^(-1) A
-  ) norm(z^((k))) / norm(bold(b)) arrow.r.double.long norm(z^((k))) / norm(bold(b)) lt.eq epsilon
+  norm(bold(x)-bold(x^((k)))) / norm(bold(x^((k)))) lt.eq K( P^(-1) A ) norm(z^((k))) / norm(bold(b)) arrow.r.double.long norm(z^((k))) / norm(bold(b)) lt.eq epsilon
 $
 where $z^((k))= P^(-1) bold(r)^k$.
 
@@ -552,9 +544,7 @@ $ B_j = D^(-1) (E + F) = I - D^(-1) A $
 A generalization of the Jacobi method is the over-relaxation method(or JOR), in which, having introduced a relaxation parameter $omega$, @JacobiMethod is replaced by:
 
 $
-  x_i^((k+1)) = (1 - omega) x_i^((k)) + omega (b_i - sum_(j=1 \ j eq.not i)^(n) a_(i\j) x_j^((
-    k
-  ))) / a_(i\i), i=1, dots, n
+  x_i^((k+1)) = (1 - omega) x_i^((k)) + omega (b_i - sum_(j=1 \ j eq.not i)^(n) a_(i\j) x_j^(( k ))) / a_(i\i), i=1, dots, n
 $ <OverRelaxationMethod>
 
 The corresponding iteration matrix is:
@@ -694,9 +684,7 @@ Due to @gradient, $nabla Phi(bold(x)^((k)))=A bold(x)^((k))-bold(b)=-bold(r)^((k
 
 To compute the parameter $alpha^((k))$ let us write explicitly $Phi(bold(x)^((k+1)))$ as a function of a parameter $alpha$
 $
-  Phi(bold(x)^((k+1))) = 1 / 2 (bold(x)^((k)) + alpha bold(r)^((k)))^T A (bold(x)^((k)) + alpha bold(r)^((k))) - (
-    bold(x)^((k)) + alpha bold(r)^((k))
-  )^T bold(b)
+  Phi(bold(x)^((k+1))) = 1 / 2 (bold(x)^((k)) + alpha bold(r)^((k)))^T A (bold(x)^((k)) + alpha bold(r)^((k))) - ( bold(x)^((k)) + alpha bold(r)^((k)) )^T bold(b)
 $
 Diﬀerentiating with respect to α and setting it equal to zero yields the desired value of $alpha_k$
 $
@@ -878,14 +866,23 @@ As $k arrow infinity$, the vector $bold(q)^((k))$ thus aligns itself along the d
 ]
 Estimate @EstimatePowerMethod expresses the convergence of the sequence of $bold(tilde(q))^((k))$ towards the eigenvector $bold(x)_1$ of $A$. Therefore the sequence of Rayleigh quotients
 $
-  bold(tilde(q))^((k))^H A bold(tilde(q))^((k)) slash norm(bold(tilde(q))^((k))) = (bold(q)^((k)))^H A bold(q)^((
-    k
-  ))= nu^((k))
+  bold(tilde(q))^((k))^H A bold(tilde(q))^((k)) slash norm(bold(tilde(q))^((k))) = (bold(q)^((k)))^H A bold(q)^(( k ))= nu^((k))
 $
 will converge to the dominant eigenvalue $lambda_1$ of $A$. As a consequence, and the convergence will be faster when the ratio $|lambda_2 / lambda_1|$ is smaller.
 
 == Deflation
-
+Let $A$ be an $n times n$ real symmetric matrix with isolated non-zero eigenvalues
+$
+  |lambda_1| gt |lambda_2| gt dots gt |lambda_n| gt 0
+$
+and eigenvector $bold(v)_1, dots, bold(v)_n$. The goal of *deflation* is to build a modified matrix that has only $lambda_2, dots, lambda_n$ as eigenvalues. Suppose we have obtained $lambda_1$ and $bold(v)_1$. This goal is achieved by defining the 'deflated' matrix $B$ as
+$
+  B = A - lambda_1 bold(v)_1 bold(x)
+$
+where $bold(x)$ is any vector such that
+$
+  bold(v)_1^T bold(x) = 1
+$
 
 == The Inverse Power Method
 We look for an approximation of the eigenvalue of a matrix $A in CC^(n times n)$ which is _closest_ to a given number $mu in CC$, where $mu in.not sigma(A)$. For this, the power iteration is applied to the matrix $(M_mu)^(-1)=(A - mu I)^(-1)$, yielding the so-called _inverse iteration_ or _inverse power method_. The number $mu$ is called the _shift_ of the method.
@@ -1152,11 +1149,7 @@ $
 $
 where, for $k gt.eq 2$, matrix $A^((k))$ takes the following form:
 $
-  A^((
-    k
-  )) = mat(a_(1 1)^((1)), a_(1 2)^((1)), dots, a_(1 n)^((1)); 0, a_(2 2)^((2)), dots, a_(2 n)^((2)); dots; 0, 0, dots, a_(k k)^((k))) = L^((
-    k
-  )) U^((k))
+  A^(( k )) = mat(a_(1 1)^((1)), a_(1 2)^((1)), dots, a_(1 n)^((1)); 0, a_(2 2)^((2)), dots, a_(2 n)^((2)); dots; 0, 0, dots, a_(k k)^((k))) = L^(( k )) U^((k))
 $
 It is clear that for $k=n$ we obtain the upper triangular system $U bold(x) = bold(b)^((n))$ which can be solved by backward substitution.
 

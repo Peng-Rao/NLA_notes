@@ -25,6 +25,61 @@
 #set math.vec(delim: "[")
 #set math.equation(supplement: [Eq.])
 
+#outline(
+  title: "Part1 --- Numerical Mathematics",
+  target: selector(heading).after(<part-1>, inclusive: true).before(<part-2>, inclusive: false),
+  indent: auto,
+  depth: 2,
+)
+
+#pagebreak()
+
+= Floating Point Arithmetic <part-1>
+Since computers use a *finite number* of bits to represent a real number, *they can only represent a finite subset of the real numbers*. In general the range of numbers is sufficient large but there are naturally gaps, which might lead to problems.
+
+Hence, it is time to discuss the representation of real numbers in a computer. We are used to representing a number in digits
+$
+  105.67 = 1000 dot 0.10567 = +10^3 (1 dot 10^(-1) + 0 dot 10^(-2) + 5 dot 10^(-3) + 6 dot 10^(-4) + 7 dot 10^(-5))
+$
+
+#definition("Floating Point Representation")[
+  A B-adic, normalised floating point number of precision $m$ is either $x=0$ or
+  $
+    x = plus.minus B^e sum_(k=-m)^(-1) x_k B^k, space x_(-1) eq.not 0, x_k in {0, dots, B-1}, e in ZZ
+  $
+  Here, $e$ denote the _exponent_ within a given range $e_(min) lt.eq e lt.eq e_(max), B gt.eq 2$ is the _base_ and $sum x_k B_k$ denotes the _mantissa_.
+]
+
+For example, the *IEEE 754* norm states that for a double precision number we have $B=2$ and $m =52$. Hence, if one bit is used to store the sign and if 11 bits are reserved for representing the exponent, a double precision number can be stored in 64 bits. In this case, the *IEEE 754* norm defines the following additional values:
+- $plus.minus inf$ for $plus.minus infinity$ as the result of dividing positive or negative numbers by zero, for the evaluation of log(0) and for _overflow_ errors, meaning results which would require an exponent outside the range $[e_(min) lt.eq e lt.eq e_(max)]$.
+- _NaN_ (not a number) for undefined numbers as they, for example, occur when dividing 0 by 0 or evaluating the logarithm for a negative number.
+
+As a consequence, the distribution of floating point numbers is not uniform. Furthermore, every real number and the result of every operation has to be rounded. There are diﬀerent rounding strategies, but the default one is rounding $x$ to the nearest machine number $"rd"(x)$.
+
+#definition("Machine Epsilon")[
+  The _machine precision_, eps, is the smallest number such that
+  $
+    abs(x-"rd"(x)) lt.eq "eps" abs(x)
+  $
+  for all $x in RR$ within the range of the floating point system.
+]
+
+It is easy to determine the machine precision for the default rounding strategy.
+
+#theorem("Machine Epsilon")[
+  _  For a floating point number system with base B and precision m the machine precision is given by_ $"eps"=B^(1-m)$, we have
+  $
+    abs(x-"rd"(x)) lt.eq B^(1-m) abs(x)
+  $
+]
+
+#theorem("Error Propagation")[
+  Let $ast$ be one of the operations $plus, minus, dot, div$ and $ast.circle$ be the equivalent floating operation, then for all $x, y$ from the floating point system, there exists an $epsilon in RR$ with $|epsilon| lt.eq "eps"$ such that
+  $
+    x ast.circle y = (x ast y) (1+epsilon)
+  $
+]
+
 = Matrix Decompositions and Factorization
 == QR Factorization
 Let $A in RR(m times n)$ be a rectangular matrix, then
@@ -54,6 +109,8 @@ The computational cost of the Cholesky factorization is $O(n^3 slash 3)$.
 If $A in CC^(n times n)$ then there is a unitary matrix $U in CC^(n times n)$ such that:
 $ U^H A U = T $ <SchurDecomposition>
 where $T$ is an upper triangular matrix. The diagonal elements of $T$ are the eigenvalues of $A$. $U = [bold(u)_1, dots, bold(u)_n]$ are called Schur vectors. They are generally not the eigenvectors of $A$.
+
+#pagebreak()
 
 = Norms
 The essential notions of *size and distance* in a vector space are captured by norms. These are the _yardsticks_ with which we measure approximations and convergence throughout numerical linear algebra.
@@ -356,6 +413,7 @@ The concepts of stability and convergence are strongly connected.
 #theorem[
   If problem @1 is well-posed, a _necessary_ condition in order for the numerical problem @problem2 to be convergent is that it is stable.
 ]
+
 #pagebreak()
 = Sparse matrices
 == Sparse matrices storage formats
@@ -407,7 +465,7 @@ To create a sparse matrix in the CSR format, we use the `csr_matrix` function, w
 
 #import "../template.typ": *
 
-= Iterative methods for large linear systems
+= Iterative methods for large linear systems <part-2>
 Given an $n times n$ real matrix $A$ and a real $n$-vector, the problem is: Find $bold(x)$ belonging to $RR^n$ such that
 
 $ A bold(x) = bold(b) $ <problem1>
@@ -533,9 +591,7 @@ This amounts to performing the following splitting for A:
 
 where $D$ is the diagonal matrix of the diagonal entries of $A$, $E$ is the lower triangular matrix, and $F$ is the upper triangular matrix:
 
-#figure(
-  image("../figures/partition1.jpg", height: 20%),
-)
+#figure(image("../figures/partition1.jpg", height: 20%))
 
 The iteration matrix of the Jacobi method is thus given by
 

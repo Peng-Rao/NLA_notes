@@ -45,34 +45,34 @@
     number-align: center,
 
     // 页边距
-    margin: (x:1.6cm, y:2.3cm),
+    margin: (x: 1.6cm, y: 2.3cm),
 
     // 封面图片和背景图片
     background: locate(loc => {
       if loc.page() == 1 and cover-image != none {
-        block(width:100%, height: 100%)[#image(cover-image, width: 40%)]
-      } else if background-color != none{
-        block(width:100%, height:100%, fill: rgb(background-color))
+        block(width: 100%, height: 100%)[#image(cover-image, width: 40%)]
+      } else if background-color != none {
+        block(width: 100%, height: 100%, fill: rgb(background-color))
       }
     }),
 
     // 页眉
     header: locate(loc => {
-      if loc.page() == 1{return}
+      if loc.page() == 1 { return }
       let elems = query(heading.where(level: 1).after(loc))
       let chapter-title = ""
-      if(elems == () or elems.first().location().page() != loc.page()){
+      if (elems == () or elems.first().location().page() != loc.page()) {
         let elems = query(heading.where(level: 1).before(loc))
         chapter-title = elems.last().body
-      }else{
+      } else {
         chapter-title = elems.first().body
       }
       let head-title = text()[
-        #if short-title != none {short-title} else {title}
+        #if short-title != none { short-title } else { title }
       ]
       if calc.even(loc.page()) == true {
         emph(chapter-title) + h(1fr) + emph(head-title)
-      }else{
+      } else {
         emph(head-title) + h(1fr) + emph(chapter-title)
       }
       v(-8pt)
@@ -84,16 +84,16 @@
       if loc.page() == 1 { return }
       [
         #if calc.even(loc.page()) == true {
-          align(center)[#counter(page).display("1 / 1",both: true,)]
+          align(center)[#counter(page).display("1 / 1", both: true)]
         } else {
-          align(center)[#counter(page).display("1 / 1",both: true,)]
+          align(center)[#counter(page).display("1 / 1", both: true)]
         }
       ]
-    })
+    }),
   )
 
   // 配置列表
-  set list(tight: true, indent: 2em)
+  set list(tight: true, indent: 1em)
   show list: it => [
     #set text(top-edge: "ascender")
     #it
@@ -144,18 +144,22 @@
   show raw: set text(font: "DroidSansM Nerd Font", size: 10pt)
 
   // 配置公式的编号和间距
-  set math.equation(numbering: (..nums) => locate(loc => {
-    numbering("(1.1)", chaptercounter.at(loc).first(), ..nums)
-  }))
+  set math.equation(
+    numbering: (..nums) => locate(loc => {
+      numbering("(1.1)", chaptercounter.at(loc).first(), ..nums)
+    }),
+  )
   show math.equation: eq => {
     set block(spacing: 0.65em)
     eq
   }
 
   // 配置图像和图像编号
-  set figure(numbering: (..nums) => locate(loc => {
-    numbering("1.1", chaptercounter.at(loc).first(), ..nums)
-  }))
+  set figure(
+    numbering: (..nums) => locate(loc => {
+      numbering("1.1", chaptercounter.at(loc).first(), ..nums)
+    }),
+  )
 
   // 配置表格
   set table(
@@ -200,26 +204,26 @@
           {
             authors
               .map(author => {
-                  text(16pt, weight: "semibold")[
-                    #if "homepage" in author {
-                      [#link(author.homepage)[#author.name]]
-                    } else {
-                      author.name
-                    }]
-                  if "affiliations" in author {
-                    super(author.affiliations)
-                  }
-                })
-              .join(
-              ", ",
-              last: {
-                if authors.len() > 2 {
-                  ", and"
-                } else {
-                  " and"
+                text(16pt, weight: "semibold")[
+                  #if "homepage" in author {
+                    [#link(author.homepage)[#author.name]]
+                  } else {
+                    author.name
+                  }]
+                if "affiliations" in author {
+                  super(author.affiliations)
                 }
-              },
-            )
+              })
+              .join(
+                ", ",
+                last: {
+                  if authors.len() > 2 {
+                    ", and"
+                  } else {
+                    " and"
+                  }
+                },
+              )
           },
         )
       }
@@ -230,10 +234,10 @@
           {
             affiliations
               .map(affiliation => {
-                  text(12pt)[
-                    #h(1pt)#affiliation.name
-                  ]
-                })
+                text(12pt)[
+                  #h(1pt)#affiliation.name
+                ]
+              })
               .join(", ")
           },
         )
@@ -261,11 +265,14 @@
           datetime.today().display("[year]-[month]-[day]"),
         )
       } else {
-        text(size: 11pt)[Last updated at: #h(5pt)] + text(
-          size: 11pt,
-          fill: accen-color,
-          weight: "semibold",
-          datetime.today().display("[month repr:long] [day padding:zero], [year repr:full]"),
+        (
+          text(size: 11pt)[Last updated at: #h(5pt)]
+            + text(
+              size: 11pt,
+              fill: accen-color,
+              weight: "semibold",
+              datetime.today().display("[month repr:long] [day padding:zero], [year repr:full]"),
+            )
         )
       }
     ]
@@ -336,7 +343,7 @@
   2, // number of base number levels to use
   (name, number, body) => {
     notebox(name, number, body, "definition", defSvg, orange)
-  }
+  },
 ).with(numbering: boxnumbering)
 
 #let example = thmenv(

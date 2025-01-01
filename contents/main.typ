@@ -25,16 +25,7 @@
 #set math.vec(delim: "[")
 #set math.equation(supplement: [Eq.])
 
-#outline(
-  title: "Part1 --- Numerical Mathematics",
-  target: selector(heading).after(<part-1>, inclusive: true).before(<part-2>, inclusive: false),
-  indent: auto,
-  depth: 2,
-)
-
-#pagebreak()
-
-= Floating Point Arithmetic <part-1>
+= Floating Point Arithmetic
 Since computers use a *finite number* of bits to represent a real number, *they can only represent a finite subset of the real numbers*. In general the range of numbers is sufficient large but there are naturally gaps, which might lead to problems.
 
 Hence, it is time to discuss the representation of real numbers in a computer. We are used to representing a number in digits
@@ -89,21 +80,6 @@ where $Q in RR(m times m)$ is an orthogonal matrix and $R in RR(m times n)$ is a
 One version of the $Q R$ factorization is _reduced $Q R$ factorization_. Let $A$ be an $m times n$ matrix. The reduced $Q R$ factorization of $A$ is a factorization of the form:
 $ A = hat(Q) hat(R) $ <ReducedQRFactorization>
 where $Q in RR(m times n)$ is an rectangular matrix and $R in RR(n times n)$ is an upper triangular matrix.
-
-== Cholesky Factorization
-Let $A in RR^(n times n)$ be a _symmetric and positive definite_ (SPD) matrix. Then, there exists a unique upper triangular matrix $R in RR^(n times n)$ with positive diagonal
-entries such that:
-$ A = R^T R $ <CholeskyFactorization>
-This factorization is called _Cholesky factorization_.
-#align(center)[
-  #pseudocode-list(line-numbering: none, booktabs: true, title: smallcaps[Cholesky Factorization], line-gap: 1.5em)[
-    + Let $r_11=sqrt(a_11)$.
-    + *For* $k=2, dots$
-      + $r_(i j) = 1 / r_(i i)(a_(i j)- sum_(k=1)^(i-1)r_(k i) r_(k j))$
-      + $r_(i i) = sqrt(a_(i i)- sum_(k=1)^(i-1)r_(k i)^2)$
-  ]
-]
-The computational cost of the Cholesky factorization is $O(n^3 slash 3)$.
 
 == Schur Decomposition
 If $A in CC^(n times n)$ then there is a unitary matrix $U in CC^(n times n)$ such that:
@@ -415,6 +391,59 @@ The concepts of stability and convergence are strongly connected.
 ]
 
 #pagebreak()
+= Nolinear Equations
+== The bisection method
+Let $f$ be a continuous function in $[a, b]$ which satisfies $f(a) f(b) lt 0$. Then *necessarily* $f$ has at least one zero in $(a, b)$.
+
+#figure(
+  image(
+    "../figures/iterations_bisection.jpg",
+    width: 60%,
+  ),
+  caption: "Iterations of the bisection method",
+)
+
+The strategy of the bisection method is to havle the given interval and select that subinterval where $f$ fatures a sign change.
+
+== The Newton method
+The sign of the given function $f$ at the endpoints of the subintervals is the only information exploited by the bisection method. A more efficient method can be constructed by exploiting the values attained by $f$ and its derivative. In that case,
+$
+  y(x)=f(x^((k))) + f'(x^((k)))(x-x^((k)))
+$
+provides the equation of the tangent to the curve $(x, f(x))$ at the point $x^((k))$.
+
+If we pretend that $x^((k+1))$ is such that $y(x^((k+1)))=0$, we obtain:
+$
+  x^((k+1))=x^((k)) - f(x^((k))) / (f'(x^((k)))), k gt.eq 0
+$
+provided that $f'(x^((k))) eq.not 0$. This formula allows us to compute a sequence of values $x^((k))$ starting from an initial guess $x^((0))$. This method is known as Newton's method and corresponds to computing the zeros of $f$ by locally replacing $f$ by its tangent.
+
+The Newton method in general does not converge for all possible choices of $x^((0))$, but only for those value of $x^((0))$ which are *sufficiently close* to $alpha$. In order to compute $alpha$, one should start from a value sufficiently close to $alpha$.
+
+In practice, the initial value $x^((0))$ can be obtained by resorting to a few iterations of the bisection method of, through an investigation of the graph of $f$. If $x^((0))$ is properly closen and $alpha$ is a simple zero $(f'(alpha) eq.not 0)$, then the Newton method converges *quadratically* to $alpha$. If $f'(alpha)=0$, the method converges at most linearly.
+
+=== Stopping criteria
+In practice, one requires an approximation of $alpha$ up to a prescribed tolerance $epsilon$. Thus the iterations can be terminated at the smallest value of $k_(min)$ for which the following inequality holds:
+$
+  |e^((k_(min)))|=|x^((k_(min))) - alpha| lt epsilon
+$
+Alternatively, one could use a test on the _residual_ at step $k$, $r^((k))=f(x^((k)))$.
+
+Precisely, we could stop the iteration at the first $k_(min)$ for which
+$
+  |r^((k_(min)))| = |f(x^((k_(min))))| lt epsilon
+$
+The test on the residual is satisfactory only when $|f'(x)| tilde.eq 1$ in a neighborhood of $I_alpha$ of the zero $alpha$. Otherwise, it will produce an over estimation of the error if $|f'(x)| gt.double 1$ and an under estimation if $|f'(x)| lt.double 1$.
+#figure(
+  image(
+    "../figures/error_estimator.jpg",
+    width: 70%,
+  ),
+  caption: [Two situations in which the residual is a poor error estimator: $|f'(x)| gt.double 1$, $|f'(x)| lt.double 1$],
+)
+
+== Fixed Point Iterations
+#pagebreak()
 = Sparse matrices
 == Sparse matrices storage formats
 Sparse matrices are matrices that contain a large number of zero elements. The storage of these matrices can be optimized by using different formats. The most common formats are:
@@ -463,9 +492,166 @@ To create a sparse matrix in the CSR format, we use the `csr_matrix` function, w
 
 #pagebreak()
 
-#import "../template.typ": *
+= Direct Methods for Solving Linear Systems
+== Solution of Triangular Systems
+Consider the nonsingular $3 times 3$ *lower triangular* system:
+$
+  mat(l_11, 0, 0; l_21, l_22, 0; l_31, l_32, l_33) vec(x_1, x_2, x_3) = vec(b_1, b_2, b_3)
+$
+Since the matrix is nonsingular, its diagonal entries $l_(i i)$ are nonzero, hence we can solve sequentially for the unknown values $x_i$, as follows:
+$
+  x_1 = b_1 slash l_11 \
+  x_2 = (b_2 - l_21 x_1) slash l_22 \
+  x_3 = (b_3 - l_31 x_1 - l_32 x_2) slash l_33
+$
+This algorithm can be extended to systems $n times n$ and is called _forward substitution_. In the case of system #lower_triangular_system, with $L$ being a nonsingular lower triangular matrix of order $n(n gt.eq 2)$, the method is as follows:
+$
+  x_1 = b_1 slash l_11 \
+  x_n = 1 / l_(i i) (b_i - sum_(j=1)^(i-1) l_(i j) x_j), i = 2, dots, n
+$
+The number of multiplications and divisions to execute the algorithm is equal to $n(n+1) / 2$, while the number of sums and subtractions is $n(n-1) / 2$. *The global operation count for the forward substitution is $n^2$.*
 
-= Iterative methods for large linear systems <part-2>
+Similar conclusions can be drawn for a linear system #upper_triangular_system, with $U$ being a nonsingular upper triangular matrix of order $n(n gt.eq 2)$. In this case the algorithm is called _backward substitution_ and in the general case can be written as:
+$
+  x_n = b_n / u_(n n) \
+  x_i = 1 / u_(i i) (b_i - sum_(j=i+1)^(n) u_(i j) x_j), i = n-1, dots, 1
+$
+Its computational cost is the same as that of the forward substitution.
+
+== Guassian Elimination and LU Factorization
+Consider a nonsingular matrix $A in RR^(n times n)$, and suppose that the diagonal entries $a_(i i)$ is nonzero. Introducing the _multiplers_:
+$
+  m_(i 1) = a_(i 1)^((1)) / a_(1 1)^((1)), i = 2, dots, n
+$
+where $a_(i 1)^((1))$ denote the elements of $A^((1))$, it is possible to eliminate the unknown $x_1$ from the rows other than the first one by simply subtracting from row $i$, with $i=2, dots, n$, the first row multiplied by $m_(i 1)$ and doing the same on the right side. If we now define
+$
+  a_(i j)^((2))=&a_(i j)^((1)) - m_(i 1) a_(1 j)^((1)), i, j = 2, dots, n \
+  b_i^((2))=&b_i^((1)) - m_(i 1) b_1^((1)), i = 2, dots, n
+$
+where $b_i ^((1))$ denotes the elements of $bold(b)^((1))$, we have the following system:
+$
+  mat(a_(1 1)^((1)), a_(1 2)^((1)), dots, a_(1 n)^((1)); 0, a_(2 2)^((2)), dots, a_(2 n)^((2)); dots; 0, 0, dots, a_(n n)^((n))) vec(x_1, x_2, dots, x_n) = vec(b_1^((1)), b_2^((2)), dots, b_n^((n)))
+$
+which we denote by $A^((2)) bold(x) = bold(b)^((2))$. that is equivalent to the starting one. Similarly, we can transform the system in such a way that the unknown $x_2$ is eliminated from rows $3, dots, n$,.In general, we end up with the finite sequence of systems
+$
+  A^((k)) bold(x) = bold(b)^((k)), k = 1, dots, n
+$
+where, for $k gt.eq 2$, matrix $A^((k))$ takes the following form:
+$
+  A^(( k )) = mat(a_(1 1)^((1)), a_(1 2)^((1)), dots, a_(1 n)^((1)); 0, a_(2 2)^((2)), dots, a_(2 n)^((2)); dots; 0, 0, dots, a_(k k)^((k))) = L^(( k )) U^((k))
+$
+#definition("elmentary lower triangular matrix")[
+  For $1 lt.eq k lt.eq n - 1$, let $bold(m) in RR^n$ be a vector with $bold(e)^T_j bold(m)=0$ for $1 lt.eq j lt.eq k$, meaning that $bold(m)$ is of the form
+  $
+    bold(m) = mat(0, dots, 0, m_(k+1), dots, m_n)^T
+  $
+  An elementary lower triangular matrix is a lower triangular matrix of the specific form:
+  $
+    L_k(bold(m)):=I-bold(m) bold(e)^T_k = mat(1, , , , ,; , dots.down, , , ,; , , 1, , , ; , , -m_(k+1), 1, , ;  , , dots.v, , dots.down, ,; , , -m_n, , , 1)
+  $
+]
+
+It is clear that for $k=n$ we obtain the upper triangular system $U bold(x) = bold(b)^((n))$ which can be solved by backward substitution.
+
+#figure(
+  kind: "algorithm",
+  supplement: [Algorithm],
+
+  pseudocode-list(
+    line-numbering: none,
+    booktabs: true,
+    line-gap: 1em,
+    title: smallcaps[Gaussian Elimination],
+  )[
+    + *Input:* $A in RR^(n times n)$, $bold(b) in RR^n$
+    + *Output:* $A^((n))$upper triangular and $bold(b)^((n))$
+    + *For* $k=1$ to $n-1$ *do*
+      + $d:=1 slash a_(k k)$
+      + *For* $i=k+1$ to $n$ *do*
+        + $a_(i k):=a_(i k) dot d$
+        + $b_i = b_i - b_k dot a_(i k)$
+        + *For* $j=k+1$ to $n$ *do*
+          + $a_(i j) = a_(i j) - a_(i k) a_(k j)$
+  ],
+)
+
+Gaussian elimination requires $O(n^3)$ time and $O(n^2)$ space.
+
+Suppose we may construct a sequence of $n-1$ elementary lower triangular matrices $L_j=L_j (bold(m_j))$, such that
+$
+  L_(n-1) L_(n-2) dots L_(2) L_(1) A = U
+$
+
+#theorem("Existence and Uniqueness")[
+  Let $A in RR^(n times n)$. The LU factorization of $A$ with $l_(i i) = 1$ for $i=1, dots, n$ exists and is unique iff the principal submatrices $A_i$ of $A$ of order $i=1, dots, n-1$ are nonsingular.
+]
+
+#theorem("Sufficient Condition for Gaussian Elimination")[
+  Let $A in RR^(n times n)$ be a nonsingular matrix. The LU factorization of $A$ exists and is unique if $A$ follows the below two conditions:
+  + $A$ is strictly diagonally dominant by rows / columns
+  + $A$ is symmetric and positive definite
+]
+
+== Pivoting techniques
+As previously pointed out, the GEM process breaks down as soon as a zero pivotal entry is computed. In such case, one needs to resort to the so-called _pivoting techniques_, which amounts to exchanging rows(columns) of the system in such a way that nonzero pivotal elements are always available. So the $L U$ factorization becomes:
+$
+  P A = L U
+$
+where $P$ is a permutation matrix. To solve linear system $A bold(x)=bold(b)$, we solve the equivalent system $P A bold(x)=P bold(b)$, which can be solved by the following two triangular systems:
+$
+  L bold(y) = P bold(b) \
+  U bold(x) = bold(y)
+$
+Moreover, the piovtal element should be as large as possible to avoid round-off errors. In practice:
++ doing pivoting even when it is not strictly needed.
++ Swap the row $k$ with the row $i$, where $i$ is the row with the largest pivotal element in the $k$-th column.
+
+#figure(
+  kind: "algorithm",
+  supplement: [Algorithm],
+
+  pseudocode-list(
+    line-numbering: none,
+    booktabs: true,
+    line-gap: 1em,
+    title: smallcaps[LU Factorization with partial pivoting],
+  )[
+    + *Input:* $A in RR^(n times n)$, $bold(b) in RR^n$
+    + *Output:* $P A = L U$
+    + *For* $k=1$ to $n-1$ *do*
+      + Find the pivot element $a_(k r)$ for row $k$
+      + Exchange row $k$ with row $r$
+      + $d:=1 slash a_(k k)$
+      + *For* $i=k+1$ to $n$ *do*
+        + $a_(i k):=a_(i k) dot d$
+        + $b_i = b_i - b_k dot a_(i k)$
+        + *For* $j=k+1$ to $n$ *do*
+          + $a_(i j) = a_(i j) - a_(i k) a_(k j)$
+  ],
+)
+
+== Cholesky Factorization
+Let $A in RR^(n times n)$ be a _symmetric and positive definite_ (SPD) matrix. Then, there exists a unique upper triangular matrix $R in RR^(n times n)$ with positive diagonal
+entries such that:
+$ A = R^T R $ <CholeskyFactorization>
+
+This factorization is called _Cholesky factorization_.
+
+#theorem("Cholesky factorization")[
+  Suppose $A=A^T$ is positive define. Then, $A$ possesses a Cholesky factorization.
+]
+
+#align(center)[
+  #pseudocode-list(line-numbering: none, booktabs: true, title: smallcaps[Cholesky Factorization], line-gap: 1.5em)[
+    + Let $r_11=sqrt(a_11)$.
+    + *For* $k=2, dots$
+      + $r_(i j) = 1 / r_(i i)(a_(i j)- sum_(k=1)^(i-1)r_(k i) r_(k j))$
+      + $r_(i i) = sqrt(a_(i i)- sum_(k=1)^(i-1)r_(k i)^2)$
+  ]
+]
+The computational cost of the Cholesky factorization is $O(n^3 slash 3)$.
+
+= Iterative methods for large linear systems
 Given an $n times n$ real matrix $A$ and a real $n$-vector, the problem is: Find $bold(x)$ belonging to $RR^n$ such that
 
 $ A bold(x) = bold(b) $ <problem1>
@@ -1158,77 +1344,3 @@ In general, we need $n− 1$ Householder transformations to get $H_(n-1) dots H_
 
 
 #pagebreak()
-
-= Direct Methods for Linear Systems
-== Solution of Triangular Systems
-Consider the nonsingular $3 times 3$ *lower triangular* system:
-$
-  mat(l_11, 0, 0; l_21, l_22, 0; l_31, l_32, l_33) vec(x_1, x_2, x_3) = vec(b_1, b_2, b_3)
-$
-Since the matrix is nonsingular, its diagonal entries $l_(i i)$ are nonzero, hence we can solve sequentially for the unknown values $x_i$, as follows:
-$
-  x_1 = b_1 slash l_11 \
-  x_2 = (b_2 - l_21 x_1) slash l_22 \
-  x_3 = (b_3 - l_31 x_1 - l_32 x_2) slash l_33
-$
-This algorithm can be extended to systems $n times n$ and is called _forward substitution_. In the case of system #lower_triangular_system, with $L$ being a nonsingular lower triangular matrix of order $n(n gt.eq 2)$, the method is as follows:
-$
-  x_1 = b_1 slash l_11 \
-  x_n = 1 / l_(i i) (b_i - sum_(j=1)^(i-1) l_(i j) x_j), i = 2, dots, n
-$
-The number of multiplications and divisions to execute the algorithm is equal to $n(n+1) / 2$, while the number of sums and subtractions is $n(n-1) / 2$. The global operation count for the forward substitution is $n^2$.
-
-Similar conclusions can be drawn for a linear system #upper_triangular_system, with $U$ being a nonsingular upper triangular matrix of order $n(n gt.eq 2)$. In this case the algorithm is called _backward substitution_ and in the general case can be written as:
-$
-  x_n = b_n / u_(n n) \
-  x_i = 1 / u_(i i) (b_i - sum_(j=i+1)^(n) u_(i j) x_j), i = n-1, dots, 1
-$
-Its computational cost is the same as that of the forward substitution.
-
-== Guassian Elimination and LU Factorization
-Consider a nonsingular matrix $A in RR^(n times n)$, and suppose that the diagonal entries $a_(i i)$ is nonzero. Introducing the _multiplers_:
-$
-  m_(i 1) = a_(i 1)^((1)) / a_(1 1)^((1)), i = 2, dots, n
-$
-where $a_(i 1)^((1))$ denote the elements of $A^((1))$, it is possible to eliminate the unknown $x_1$ from the rows other than the first one by simply subtracting from row $i$, with $i=2, dots, n$, the first row multiplied by $m_(i 1)$ and doing the same on the right side. If we now define
-$
-  a_(i j)^((2))=&a_(i j)^((1)) - m_(i 1) a_(1 j)^((1)), i, j = 2, dots, n \
-  b_i^((2))=&b_i^((1)) - m_(i 1) b_1^((1)), i = 2, dots, n
-$
-where $b_i ^((1))$ denotes the elements of $bold(b)^((1))$, we have the following system:
-$
-  mat(a_(1 1)^((1)), a_(1 2)^((1)), dots, a_(1 n)^((1)); 0, a_(2 2)^((2)), dots, a_(2 n)^((2)); dots; 0, 0, dots, a_(n n)^((n))) vec(x_1, x_2, dots, x_n) = vec(b_1^((1)), b_2^((2)), dots, b_n^((n)))
-$
-which we denote by $A^((2)) bold(x) = bold(b)^((2))$. that is equivalent to the starting one. Similarly, we can transform the system in such a way that the unknown $x_2$ is eliminated from rows $3, dots, n$,.In general, we end up with the finite sequence of systems
-$
-  A^((k)) bold(x) = bold(b)^((k)), k = 1, dots, n
-$
-where, for $k gt.eq 2$, matrix $A^((k))$ takes the following form:
-$
-  A^(( k )) = mat(a_(1 1)^((1)), a_(1 2)^((1)), dots, a_(1 n)^((1)); 0, a_(2 2)^((2)), dots, a_(2 n)^((2)); dots; 0, 0, dots, a_(k k)^((k))) = L^(( k )) U^((k))
-$
-It is clear that for $k=n$ we obtain the upper triangular system $U bold(x) = bold(b)^((n))$ which can be solved by backward substitution.
-
-#theorem("Existence and Uniqueness")[
-  Let $A in RR^(n times n)$. The LU factorization of $A$ with $l_(i i) = 1$ for $i=1, dots, n$ exists and is unique iff the principal submatrices $A_i$ of $A$ of order $i=1, dots, n-1$ are nonsingular.
-]
-
-#theorem("Sufficient Condition for Gaussian Elimination")[
-  Let $A in RR^(n times n)$ be a nonsingular matrix. The LU factorization of $A$ exists and is unique if $A$ follows the below two conditions:
-  + $A$ is strictly diagonally dominant by rows / columns
-  + $A$ is symmetric and positive definite
-]
-
-== Pivoting techniques
-As previously pointed out, the GEM process breaks down as soon as a zero pivotal entry is computed. In such case, one needs to resort to the so-called _pivoting techniques_, which amounts to exchanging rows(columns) of the system in such a way that nonzero pivotal elements are always available. So the $L U$ factorization becomes:
-$
-  P A = L U
-$
-where $P$ is a permutation matrix. To solve linear system $A bold(x)=bold(b)$, we solve the equivalent system $P A bold(x)=P bold(b)$, which can be solved by the following two triangular systems:
-$
-  L bold(y) = P bold(b) \
-  U bold(x) = bold(y)
-$
-Moreover, the piovtal element should be as large as possible to avoid round-off errors. In practice:
-+ doing pivoting even when it is not strictly needed.
-+ Swap the row $k$ with the row $i$, where $i$ is the row with the largest pivotal element in the $k$-th column.

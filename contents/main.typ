@@ -443,7 +443,46 @@ The test on the residual is satisfactory only when $|f'(x)| tilde.eq 1$ in a nei
 )
 
 == Fixed Point Iterations
+Given a function $g:[a, b] arrow RR$, find $alpha in [a, b]$ such that
+$
+  alpha = g(alpha)
+$
+If such an $alpha$ exists it will be called a _fixed point_ of $g$. The fixed point iteration is defined as:
+$
+  x^((k+1)) = g(x^((k))), k gt.eq 0
+$
+where $x^((0))$ is an initial guess.
+
+#theorem("Convergence of Fixed Point Iterations")[
+  Assume that the iteration function in the fixed point iteration is satisfies the following properties:
+  + $g(x) in [a, b]$ for all $x in [a, b]$;
+  + $g$ is differentiable in $[a, b]$;
+  + $exists K < 1$ such that $|g'(x)| lt K$ for all $x in [a, b]$.
+  Then $g$ has a unique fixed point $alpha in [a, b]$ and the sequence defined in the fixed point iteration converges to $alpha$ for any initial guess $x^((0))$.
+] <fixedpointconvergence>
+
+#example("Convergence of Fixed Point Iterations")[
+  The function $g(x)=cos(x)$ satisfies all the assumptions @fixedpointconvergence. Indeed, $|g'(alpha)|=|sin(alpha)| tilde.eq 0.67 lt 1$, and thus by continuity there exists a neighborhood $I_alpha$ of $alpha$ such that $|g'(x)| lt 1$ for all $x in I_alpha$.
+
+  The function $g(x)=x^2 - 1$ has two fixed points $alpha_(plus.minus)=(1+sqrt(5))/2$. However,it does not satisfy the assumption for either since $g'(alpha_(plus.minus))=|1 plus.minus sqrt(5)| gt 1$. The corresponding fixed point iterations will not converge.
+]
+
+#theorem("order 2 convergence")[
+  Assume that all hypothese of @fixedpointconvergence are satisfied. In addition assume that $g$ is twice differentiable and that
+  $
+    g'(alpha) = 0, space space g''(alpha) eq.not 0
+  $
+  Then the fixed point iterations converge with order 2 and
+  $
+    lim_(k arrow infinity) (x^((k+1)) - alpha) / (x^((k)) - alpha)^2 = 1 / 2 g''(alpha)
+  $
+]
+
+=== Stopping criteria
+In general, fixed point iterations are terminated when the absolute value of the difference between two consecutive iterates is less than a prescribed tolerance $epsilon$.
+
 #pagebreak()
+
 = Sparse matrices
 == Sparse matrices storage formats
 Sparse matrices are matrices that contain a large number of zero elements. The storage of these matrices can be optimized by using different formats. The most common formats are:

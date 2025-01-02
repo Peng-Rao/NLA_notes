@@ -434,6 +434,7 @@ $
   |r^((k_(min)))| = |f(x^((k_(min))))| lt epsilon
 $
 The test on the residual is satisfactory only when $|f'(x)| tilde.eq 1$ in a neighborhood of $I_alpha$ of the zero $alpha$. Otherwise, it will produce an over estimation of the error if $|f'(x)| gt.double 1$ and an under estimation if $|f'(x)| lt.double 1$.
+
 #figure(
   image(
     "../figures/error_estimator.jpg",
@@ -441,6 +442,13 @@ The test on the residual is satisfactory only when $|f'(x)| tilde.eq 1$ in a nei
   ),
   caption: [Two situations in which the residual is a poor error estimator: $|f'(x)| gt.double 1$, $|f'(x)| lt.double 1$],
 )
+
+=== Modified Newton Method
+If the root $alpha$ is not simple, the Newton method converges with order 1. If $m$ is the multiplicity of the root, then the modification
+$
+  x^((k+1)) = x^((k)) - m f(x^((k))) / (f'(x^((k)))), space k gt.eq 0, space f'(x^((k))) eq.not 0
+$
+allow us to recover the second order of convergence.
 
 == Fixed Point Iterations
 Given a function $g:[a, b] arrow RR$, find $alpha in [a, b]$ such that
@@ -453,30 +461,59 @@ $
 $
 where $x^((0))$ is an initial guess.
 
+Solving the fixed point problem $x=g(x)$ is equivalent to solving the system
+$
+  cases(
+    y = x,
+    y = g(x)
+  )
+$
+to determine the intersections between $g(x)$ and the bisector line $y=x$ of the first and the third quadrants.
+
 #theorem("Convergence of Fixed Point Iterations")[
   Assume that the iteration function in the fixed point iteration is satisfies the following properties:
   + $g(x) in [a, b]$ for all $x in [a, b]$;
   + $g$ is differentiable in $[a, b]$;
   + $exists K < 1$ such that $|g'(x)| lt K$ for all $x in [a, b]$.
-  Then $g$ has a unique fixed point $alpha in [a, b]$ and the sequence defined in the fixed point iteration converges to $alpha$ for any initial guess $x^((0))$.
+  Then $g$ has a unique fixed point $alpha in [a, b]$ and the sequence defined in the fixed point iteration converges to $alpha$ for any initial guess $x^((0))$. Moreover
+  $
+    lim_(k arrow infinity) x^((k)) = (x^((k+1)) - alpha) / (x^((k)) - alpha) = g'(alpha)
+  $
 ] <fixedpointconvergence>
+Let $alpha$ be a fixed point of the a function $g$ which is continous and differentiable in a neighborhood of $alpha$.
+- if $|g'(alpha)| gt 1$, then the sequence $x^((k+1))=g(x^((k)))$ will not converge to $alpha$.
+- if $|g'(alpha)| eq 1$, then no general conclusion can be drawn both convergence and divergence become possibile.
 
+Let's see an example of the fixed point iteration.
 #example("Convergence of Fixed Point Iterations")[
   The function $g(x)=cos(x)$ satisfies all the assumptions @fixedpointconvergence. Indeed, $|g'(alpha)|=|sin(alpha)| tilde.eq 0.67 lt 1$, and thus by continuity there exists a neighborhood $I_alpha$ of $alpha$ such that $|g'(x)| lt 1$ for all $x in I_alpha$.
 
   The function $g(x)=x^2 - 1$ has two fixed points $alpha_(plus.minus)=(1+sqrt(5))/2$. However,it does not satisfy the assumption for either since $g'(alpha_(plus.minus))=|1 plus.minus sqrt(5)| gt 1$. The corresponding fixed point iterations will not converge.
 ]
 
-#theorem("order 2 convergence")[
-  Assume that all hypothese of @fixedpointconvergence are satisfied. In addition assume that $g$ is twice differentiable and that
+#theorem("order p convergence")[
+  Assume that all hypothese of @fixedpointconvergence are satisfied. In addition assume that
   $
-    g'(alpha) = 0, space space g''(alpha) eq.not 0
+    g^((i)) (alpha) = 0, space space g^((i)) (alpha) eq.not 0, space space i=1, dots, p-1
   $
-  Then the fixed point iterations converge with order 2 and
+  Then the fixed point iterations converge with order $p$ and
   $
-    lim_(k arrow infinity) (x^((k+1)) - alpha) / (x^((k)) - alpha)^2 = 1 / 2 g''(alpha)
+    lim_(k arrow infinity) (x^((k+1)) - alpha) / (x^((k)) - alpha)^p = (g^((p))(alpha)) / p!
   $
 ]
+
+Consider the limit of the above-mentioned quantity for two consecutive steps and, for $k arrow infinity$, analyze the corresponding error defining $e^((k)) = x^((k))-alpha$:
+$
+  e^((k+1)) / (e^((k)))^p = e^((k)) / (e^((k-1)))^p
+$
+so that
+$
+  e^((k+1)) / e^((k)) = (e^((k)) / e^((k-1)))^p
+$
+and applying the logarithm
+$
+  p = log(e^((k+1)) / e^((k))) / log(e^((k)) / e^((k-1))) = (log(e^((k+1))) - log(e^((k)))) / (log(e^((k))) - log(e^((k-1))))
+$
 
 === Stopping criteria
 In general, fixed point iterations are terminated when the absolute value of the difference between two consecutive iterates is less than a prescribed tolerance $epsilon$.

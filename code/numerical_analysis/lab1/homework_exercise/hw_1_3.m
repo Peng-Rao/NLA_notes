@@ -9,16 +9,16 @@ format long
 f(x) \, = \, \dfrac{1-\cos(x)}{x^2}
 \end{equation*}
 	\end{enumerate}
-	
+
 	The limit of $f(x) = \dfrac{1-\cos(x)}{x^2}$ as $x \to 0$ is well known:
 	\begin{equation*}
 	\lim_{x\to 0} \dfrac{1-\cos(x)}{x^2} = \frac{1}{2}
 	\end{equation*}
-%}	
+%}
 clear all, close all, c
 k = [1:30]';
-x = 2.^(-k);
-f = @(x) (1 - cos(x))./(x.^2);
+x = 2 .^ (-k);
+f = @(x) (1 - cos(x)) ./ (x .^ 2);
 [k x f(x)]
 
 %{
@@ -28,12 +28,12 @@ f = @(x) (1 - cos(x))./(x.^2);
 	\begin{equation*}
 		\cos(x) = 1 -\frac{1}{2}x^2 + \frac{1}{24}x^4 - \frac{1}{720}x^6 + o(x^8)
 	\end{equation*}
-	so that 
+	so that
 	\begin{equation*}
 		f(x) = \frac{1}{2} - \frac{1}{24}x^2 + \frac{1}{720}x^4 + o(x^6)
 	\end{equation*}
 %}
-f_taylor_4 = @(x) 1/2 - x.^2/24 + x.^4/720;
+f_taylor_4 = @(x)1/2 - x .^ 2/24 + x .^ 4/720;
 
 [k x f(x) f_taylor_4(x)]
 
@@ -50,8 +50,8 @@ f_taylor_4 = @(x) 1/2 - x.^2/24 + x.^4/720;
 	g(x) \, = \, x \Big (\sqrt{x+1} - \sqrt{x} \Big).
 	\end{equation*}
 	\end{enumerate}
-	
-	It is well known that 
+
+	It is well known that
 	\begin{equation*}
 	\lim_{x \to +\infty} g(x) = +\infty
 	\end{equation*}
@@ -60,9 +60,9 @@ clear all, close all, clc
 format short e
 
 k = [1:20]';
-x = 10.^(k);
+x = 10 .^ (k);
 
-g = @(x) x.*(sqrt(x+1) - sqrt(x));
+g = @(x) x .* (sqrt(x + 1) - sqrt(x));
 
 [k x g(x)]
 
@@ -75,11 +75,10 @@ g = @(x) x.*(sqrt(x+1) - sqrt(x));
 	\end{equation*}
 %}
 
-g2 = @(x) x./(sqrt(x+1) + sqrt(x));
+g2 = @(x) x ./ (sqrt(x + 1) + sqrt(x));
 
 [k x g(x) g2(x)]
 
 %{
 	This formula is more stable and does not suffer of numerical cancellation.
 %}
-

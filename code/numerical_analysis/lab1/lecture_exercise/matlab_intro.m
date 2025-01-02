@@ -18,7 +18,7 @@
 %}
 % a] Assignment operation:
 a = 1 % with echo
-b = 2;% without echo
+b = 2; % without echo
 
 % b] Recall previous commands:
 % You can recall previously used commands with up and down arrows. If you already know a part of the command you want to recall, you can digit it and then use up and down arrows.
@@ -45,7 +45,6 @@ load matlab_intro_ONLYa % this will load only the variable a, with value a = 3
 whos
 load matlab_intro % this will overwrite the current variable a to restore a = 1, and also load b = 2
 whos
-
 
 %{
 	\subsection{Vector and matrices}
@@ -80,23 +79,23 @@ g = [0:0.1:1]
 h = [10:-1:1]
 e = [1:10] % the step_size can be omitted if step_size = 1. syntax: [beginning:end]
 % or the linspace command.
-ee = linspace(1,10,10) % sintax: linspace(beginning, end, n_of_elements)
-ff = linspace(1,101,11)
-gg = linspace(0,1,11)
-hh = linspace(10,1,10)
+ee = linspace(1, 10, 10) % sintax: linspace(beginning, end, n_of_elements)
+ff = linspace(1, 101, 11)
+gg = linspace(0, 1, 11)
+hh = linspace(10, 1, 10)
 
 % You can also a zero vector/matrix ...
-i = zeros(1,5)	% row vector in IR^5
-j = zeros(5,1)	% column vector in IR^5
-K = zeros(3,4)	% matrix in IR^{3x4}
-L = zeros(2,2)	% matrix in IR^{2x2}
-M = zeros(2)	% matrix in IR^{2x2}
+i = zeros(1, 5) % row vector in IR^5
+j = zeros(5, 1) % column vector in IR^5
+K = zeros(3, 4) % matrix in IR^{3x4}
+L = zeros(2, 2) % matrix in IR^{2x2}
+M = zeros(2) % matrix in IR^{2x2}
 % .. or ones matrices ..
-n = ones(1,4)
+n = ones(1, 4)
 O = ones(2)
 % .. or indentity matrices.
 P = eye(3)
-Q = eye(3,5)    % rectangular too!!
+Q = eye(3, 5) % rectangular too!!
 % .. or diagonal matrix
 d = [1:4];
 D = diag(d)
@@ -107,8 +106,8 @@ Md = diag(diag(M)) % Md is a copy of M, in which a value 0 has been overwritten 
 % Diag also accepts a second argument. In that case it takes the upper or lower diagonals
 Dup = diag(d, 1) % matrix: the values of the first upper diagonal are taken from d
 Dbottom = diag(d, -2) % matrix: the values of the second lower diagonal are taken from d
-diagMup = diag(M,1) % vector containing the values of the first upper diagonal
-diagMbottom = diag(M,-2) % vector containing the values of the second lower diagonal
+diagMup = diag(M, 1) % vector containing the values of the first upper diagonal
+diagMbottom = diag(M, -2) % vector containing the values of the second lower diagonal
 % tril and triu commands take instead the lower and upper triangular part of a matrix.
 Ml = tril(M)
 
@@ -136,29 +135,29 @@ clear all
 c = [1:3]
 c1 = c(1)
 %
-Q = ey(3,5);
-Q11 = Q(1,1)        % Read access
-Q12 = Q(1,2)
+Q = ey(3, 5);
+Q11 = Q(1, 1) % Read access
+Q12 = Q(1, 2)
 %
 Q
-Q(1,1) = 15         % Write access
+Q(1, 1) = 15 % Write access
 Q
 
 % You can also access to blocks of the matrices, by indicating the indexes of the rows and columns you want to consider.
 c
-c([2,3])
+c([2, 3])
 Q
-Q([1,2],[1,3,4])
+Q([1, 2], [1, 3, 4])
 
 % In this operation the operator : is helpful. You can select ranges of rows and columns ..
-Q([1:2], [1:3])   % First two rows and three columns
+Q([1:2], [1:3]) % First two rows and three columns
 % .. or leave a mute index, to mean to get all the indices in that direction
-Q(:,1:3)    % Take all the rows and the first three columns
-Q(1,:)      % Take all the columns and just the first row
+Q(:, 1:3) % Take all the rows and the first three columns
+Q(1, :) % Take all the columns and just the first row
 
 % The end operator is and indicator for the last index in an indexing
 % expression
-Q(end, end)   % Take the bottom right element of Q.
+Q(end, end) % Take the bottom right element of Q.
 
 % Clear
 clear all
@@ -173,7 +172,7 @@ d = a - b % vector difference
 
 % Now we would like to perform the scalar product between vectors a and b.
 % Try
-e = a*b
+e = a * b
 % MATLAB says that the dimensions of a and b have something wrong, even if they both have 4 elements, as can be seen with
 length(a)
 numel(b) % length and numel are equivalent for vectors
@@ -182,19 +181,19 @@ numel(b) % length and numel are equivalent for vectors
 % which is clearly violated in this case.
 
 % The scalar product between a and b can be computed with
-e = a*b'
+e = a * b'
 % .. or
-e = dot(a,b)
+e = dot(a, b)
 % The tensor product F_{ij} = a_i b_j can be computed with
-F = a'*b
+F = a' * b
 % Elementwise operations between two vectors are defined !if!  the two vectors have the same number of elements:
 % * elementwise product:
-g = a.*b
+g = a .* b
 % * elementwise division:
-h = a./b
+h = a ./ b
 % * elementwise exponentiation
-i = a.^b
-j = a.^2
+i = a .^ b
+j = a .^ 2
 
 %{
 	\subsection{Matrix operations}
@@ -219,8 +218,8 @@ Q = K ./ L
 R = K .^ 2
 S = K .^ L
 % The power matrix operation K^2 = K*K is meaningful only for square matrices.
-T = K^2
-U = F^2
+T = K ^ 2
+U = F ^ 2
 
 % Clear
 clear all
@@ -252,14 +251,14 @@ clear all
 % The most simple technique to plot functions is to discretize an interval and then evaluate the function in the obtained points.
 % Plot the function y = x^2 - x + sin(pi*x) in [0,2]
 x = 0:0.1:2;
-y = x.^2 - x + sin(pi*x);   % NOTICE the use of the .^ operation
-figure      % Open a figure window
-plot(x,y)
+y = x .^ 2 - x + sin(pi * x); % NOTICE the use of the .^ operation
+figure % Open a figure window
+plot(x, y)
 % Increase the number of nodes
 hold on % plot on the same graph, for a comparison
 x2 = 0:0.01:2;
-y2 = x2.^2 - x2 + cos(pi*x2);
-plot(x2,y2,'r') % 'r' = red color
+y2 = x2 .^ 2 - x2 + cos(pi * x2);
+plot(x2, y2, 'r') % 'r' = red color
 % Other helpful options:
 grid on % draw a grid on the graph
 axis([0 2 1 2]) % set the limits on the x and y axes. Syntax: axis([xmin xmax ymin ymax])
@@ -280,22 +279,22 @@ f = @sin;
 % creates a function handle called f that refers to the function sin (builtin in MATLAB).
 
 % Function handles are used to call other functions indirectly, or to pass a function as an argument to another function. For example:
-x = linspace(0, 2*pi, 1000);
+x = linspace(0, 2 * pi, 1000);
 plot(x, f(x), 'Linewidth', 2)
 
 % A function handle can be evaluated writing its name followed by an argument list. If there are no arguments, you must use an empty argument list  '()'. For example:
-f(pi/4) %sin(pi/4)
+f(pi / 4) %sin(pi/4)
 
 % Anonymous functions are defined using the syntax
 %     @(argument-list) expression
 
 % Any variable that is not found in the argument list is inherited from the enclosing scope. Anonymous functions are useful for creating simple unnamed functions from expressions or for wrapping calls to other functions to adapt them for use by functions. For example:
-f = @(x) x.^2;
+f = @(x) x .^ 2;
 hold on
 plot(x, f(x), 'r-', 'Linewidth', 2)
 
 % Function handles can be used to reshape the form of a function in order to satisfy the requirements of another function. As an example, quad is a function for performing numerical integration. It needs single variable functions. Suppose we have
-g = @(x,y) sin(x) .* cos(y);
+g = @(x, y) sin(x) .* cos(y);
 % and we need to compute the integral for x in [0, 1] and y = 0.
 % With the function handles we can transform a two-argument function f into a single-argument one with
 y = 0;
@@ -318,13 +317,13 @@ b = 2;
 c = 3;
 d = 2;
 % Logical operators
-a < b     % Smaller than
-b > c     % Greater than
-d <= b    % Smaller or equal than
-d == b    % Equal to
-a ~= b    % Different from   % IMPORTANT: tilde with alt+0126 on Windows
-(a < b) & (b > c)     % And
-(a < b) | (b > c)     % Or
+a < b % Smaller than
+b > c % Greater than
+d <= b % Smaller or equal than
+d == b % Equal to
+a ~= b % Different from % IMPORTANT: tilde with alt+0126 on Windows
+(a < b) & (b > c) % And
+(a < b) | (b > c) % Or
 
 %{
 	\subsection{Control flow statements}
@@ -346,11 +345,11 @@ a ~= b    % Different from   % IMPORTANT: tilde with alt+0126 on Windows
 n = 5;
 %n = -5;
 if (n < 0)
-  disp('Negative n. Undefined factorial.')
+    disp('Negative n. Undefined factorial.')
 elseif (n == 0)
-  factorial = 1
+    factorial = 1
 else
-  factorial = prod(1:n)
+    factorial = prod(1:n)
 end
 
 %{
@@ -364,18 +363,24 @@ end
 
 % Sum the first 10 integer numbers
 a = 0;
+
 for (i = 1:10)
-  a = a + i;
+    a = a + i;
 end
+
 a
 % Nested loops: compute the Hilbert matrix of order n=4
 n = 4;
 A = zeros(n);
+
 for i = 1:n
-  for j = 1:n
-    A(i,j) = 1 / (i + j - 1);
-  end
+
+    for j = 1:n
+        A(i, j) = 1 / (i + j - 1);
+    end
+
 end
+
 A
 
 %{
@@ -390,10 +395,12 @@ A
 % Sum the first 10 integer numbers
 a = 0;
 i = 1;
+
 while (i < 11)
-  a = a + i;
-  i = i + 1;
+    a = a + i;
+    i = i + 1;
 end
+
 a
 i % should be 11
 
@@ -425,7 +432,7 @@ edit matlab_intro_function.m
 % The content of matlab_intro_function.m is:
 % =================
 % function sum = matlab_intro_function(num1, num2)
-% 	sum = num1 + num2; 
+% 	sum = num1 + num2;
 % end
 % =================
 % The variables defined in the function are LOCAL to the SCOPE of the function itself. There is no variable "sum"; "c" contains the output of the function

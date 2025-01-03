@@ -71,21 +71,6 @@ It is easy to determine the machine precision for the default rounding strategy.
   $
 ]
 
-= Matrix Decompositions and Factorization
-== QR Factorization
-Let $A in RR(m times n)$ be a rectangular matrix, then
-$ A = Q R $ <QRFactorization>
-where $Q in RR(m times m)$ is an orthogonal matrix and $R in RR(m times n)$ is an upper trapezoidal matrix.
-
-One version of the $Q R$ factorization is _reduced $Q R$ factorization_. Let $A$ be an $m times n$ matrix. The reduced $Q R$ factorization of $A$ is a factorization of the form:
-$ A = hat(Q) hat(R) $ <ReducedQRFactorization>
-where $Q in RR(m times n)$ is an rectangular matrix and $R in RR(n times n)$ is an upper triangular matrix.
-
-== Schur Decomposition
-If $A in CC^(n times n)$ then there is a unitary matrix $U in CC^(n times n)$ such that:
-$ U^H A U = T $ <SchurDecomposition>
-where $T$ is an upper triangular matrix. The diagonal elements of $T$ are the eigenvalues of $A$. $U = [bold(u)_1, dots, bold(u)_n]$ are called Schur vectors. They are generally not the eigenvectors of $A$.
-
 #pagebreak()
 
 = Norms
@@ -580,14 +565,14 @@ $
   x_2 = (b_2 - l_21 x_1) slash l_22 \
   x_3 = (b_3 - l_31 x_1 - l_32 x_2) slash l_33
 $
-This algorithm can be extended to systems $n times n$ and is called _forward substitution_. In the case of system #lower_triangular_system, with $L$ being a nonsingular lower triangular matrix of order $n(n gt.eq 2)$, the method is as follows:
+This algorithm can be extended to systems $n times n$ and is called *_forward substitution_*. In the case of system #lower_triangular_system, with $L$ being a nonsingular lower triangular matrix of order $n(n gt.eq 2)$, the method is as follows:
 $
   x_1 = b_1 slash l_11 \
-  x_n = 1 / l_(i i) (b_i - sum_(j=1)^(i-1) l_(i j) x_j), i = 2, dots, n
+  x_i = 1 / l_(i i) (b_i - sum_(j=1)^(i-1) l_(i j) x_j), i = 2, dots, n
 $
 The number of multiplications and divisions to execute the algorithm is equal to $n(n+1) / 2$, while the number of sums and subtractions is $n(n-1) / 2$. *The global operation count for the forward substitution is $n^2$.*
 
-Similar conclusions can be drawn for a linear system #upper_triangular_system, with $U$ being a nonsingular upper triangular matrix of order $n(n gt.eq 2)$. In this case the algorithm is called _backward substitution_ and in the general case can be written as:
+Similar conclusions can be drawn for a linear system #upper_triangular_system, with $U$ being a nonsingular upper triangular matrix of order $n(n gt.eq 2)$. In this case the algorithm is called *_backward substitution_* and in the general case can be written as:
 $
   x_n = b_n / u_(n n) \
   x_i = 1 / u_(i i) (b_i - sum_(j=i+1)^(n) u_(i j) x_j), i = n-1, dots, 1
@@ -657,6 +642,16 @@ Suppose we may construct a sequence of $n-1$ elementary lower triangular matrice
 $
   L_(n-1) L_(n-2) dots L_(2) L_(1) A = U
 $
+To sovle the system $A bold(x) = bold(b)$, we can use the following algorithm:
+$
+  cases(
+    A bold(x) = bold(b) \
+    A = L U
+  ) arrow.long L U bold(x) = bold(b) arrow.long cases(
+    L bold(y) = bold(b) \
+    U bold(x) = bold(y)
+  )
+$
 
 #theorem("Existence and Uniqueness")[
   Let $A in RR^(n times n)$. The LU factorization of $A$ with $l_(i i) = 1$ for $i=1, dots, n$ exists and is unique iff the principal submatrices $A_i$ of $A$ of order $i=1, dots, n-1$ are nonsingular.
@@ -664,8 +659,8 @@ $
 
 #theorem("Sufficient Condition for Gaussian Elimination")[
   Let $A in RR^(n times n)$ be a nonsingular matrix. The LU factorization of $A$ exists and is unique if $A$ follows the below two conditions:
-  + $A$ is strictly diagonally dominant by rows / columns
-  + $A$ is symmetric and positive definite
+  + $A$ is strictly diagonally dominant by rows / columns. $abs(a_(i i)) gt.eq sum_(j=1, j eq.not i)^n abs(a_(i j))$
+  + $A$ is symmetric and positive definite matrix. $A=A^T$ and $#quadratic_form gt 0$.
 ]
 
 == Pivoting techniques
@@ -675,8 +670,13 @@ $
 $
 where $P$ is a permutation matrix. To solve linear system $A bold(x)=bold(b)$, we solve the equivalent system $P A bold(x)=P bold(b)$, which can be solved by the following two triangular systems:
 $
-  L bold(y) = P bold(b) \
-  U bold(x) = bold(y)
+  cases(
+    A bold(x) = bold(b) \
+    P A = L U
+  ) arrow.long P A bold(x) = P bold(b) arrow.long cases(
+    L bold(y) = P bold(b) \
+    U bold(x) = bold(y)
+  )
 $
 Moreover, the piovtal element should be as large as possible to avoid round-off errors. In practice:
 + doing pivoting even when it is not strictly needed.
@@ -707,11 +707,28 @@ Moreover, the piovtal element should be as large as possible to avoid round-off 
 )
 
 == Cholesky Factorization
-Let $A in RR^(n times n)$ be a _symmetric and positive definite_ (SPD) matrix. Then, there exists a unique upper triangular matrix $R in RR^(n times n)$ with positive diagonal
-entries such that:
-$ A = R^T R $ <CholeskyFactorization>
+Let us assume that $A$ has an $L U$ factorization $A=L U$ and that $A$ is symmetric, $A=A^T$. Then we have:
+$
+  A = L U = A^T = U^T L^T
+$
+Since $U^T$ is a lower triangular matrix and $L^T$ is an upper triangular matrix, we would like to use the uniqueness of the $L U$ factorization to conclude that $L=U^T, U=L^T$. Unfortunately, this is not possible since the uniqueness requires the lower triangular matrix to be normalised, i.e. to have only ones as diagonal entries, and this may not be the case for $U^T$.
 
-This factorization is called _Cholesky factorization_.
+But if $A$ is invertible, then we can write
+$
+  U = D tilde(U)
+$
+with a diagonal matrix $D="diag"(d_11, dots, d_(n n))$ and a normalized upper triangular natrix $tilde(U)$. Therefore, we can conclude that $A = L D tilde(U)$ and hence $A^T = tilde(U)^T D L^T=L D tilde(U)$, so that we can now apply the uniqueness result to derive $L=tilde(U)^T$ and $U=D L^T$, which gives $A=L D L^T$.
+
+Let us finally make the assumption that all diagonal entries of $D$ are positive, so that we can define its square root by setting $D^(1 / 2)="diag"(sqrt(d_(11)), dots, sqrt(d_(n n)))$ which leads to the decomposition
+$
+  A = L D^(1 / 2) D^(1 / 2) L^T = tilde(L) tilde(L)^T
+$
+
+#definition("Cholesky Factorization")[
+  A decomposition of a matrix $A$ of the form $A=L L^T$ with a lower triangular matrix $L$ is called the *_Cholesky factorization_* of $A$.
+] <CholeskyFactorization>
+
+It remains to verify for what kind of matrices a Cholesky factorisation exists.
 
 #theorem("Cholesky factorization")[
   Suppose $A=A^T$ is positive define. Then, $A$ possesses a Cholesky factorization.
@@ -725,7 +742,10 @@ This factorization is called _Cholesky factorization_.
       + $r_(i i) = sqrt(a_(i i)- sum_(k=1)^(i-1)r_(k i)^2)$
   ]
 ]
-The computational cost of the Cholesky factorization is $O(n^3 slash 3)$.
+
+The computational complexity of computing the Cholesky factorization is given by $n^3 slash 6 + O(n^2)$, which is about half the complexity of the standard Gaussian elimination process.
+
+#pagebreak()
 
 = Iterative methods for large linear systems
 Given an $n times n$ real matrix $A$ and a real $n$-vector, the problem is: Find $bold(x)$ belonging to $RR^n$ such that

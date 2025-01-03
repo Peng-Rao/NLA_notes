@@ -427,3 +427,4 @@
 
 #let lower_triangular_system = $L bold(x) = bold(b)$
 #let upper_triangular_system = $U bold(x) = bold(b)$
+#let quadratic_form = $bold(x)^T A bold(x)$

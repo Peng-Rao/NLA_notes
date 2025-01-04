@@ -745,17 +745,52 @@ It remains to verify for what kind of matrices a Cholesky factorisation exists.
 
 The computational complexity of computing the Cholesky factorization is given by $n^3 slash 6 + O(n^2)$, which is about half the complexity of the standard Gaussian elimination process.
 
+== Fill-in
+When $A$ is sparse, $L U$ decomposition results in $L, U$ with nonzeros(called *_fill-in_*) at positions that were originally zero.
+
+#figure(
+  image(
+    "../figures/fill-in.jpg",
+    width: 80%,
+  ),
+  caption: [ Fill-in in the $L U$ decomposition of a sparse matrix ],
+)
+Gaussian Elimination (in its plain version) is made in such a way as to memorise $L$ and $U$ by overwriting the space allocated for $A$. So $L U$ factorization is not suitable (from the point of view of memory occupation) for sparse matrices.
+
+To reduce fill-in, it may be useful to employ reordering techniques, which consists in numbering the rows of A differently. The aim is to reduce the number of nonzeros in $L$, $U$ by permuting the nonzero structure of $A$ into a special form and respecting this form when performing the reordering.
+
 #pagebreak()
 
 = Iterative methods for large linear systems
 Given an $n times n$ real matrix $A$ and a real $n$-vector, the problem is: Find $bold(x)$ belonging to $RR^n$ such that
 
-$ A bold(x) = bold(b) $ <problem1>
+$ A bold(x) = bold(b) $ <linearsystem>
 
 where $bold(x)$ is the exact solution of the linear system $A bold(x) = bold(b)$. In such cases existence and uniqueness of the solution are ensured if one of the following (equivalent) hypotheses holds:
 + $A$ is invertible
 + rank($A$)=n;
 + the homogeneous system $A bold(x)=0$ admits only the null solution.
+
+In general, a direct method for solving the linear system requires $O(n^3)$ time. The basic idea behind iterative methods is to produce a way of approximating the application of the inverse of $A$ to $bold(b)$. The computation of each iteration usually costs $O(n^2)$ time so that the method becomes computationally interesting only if a sufficiently good approximation can be achieved in far fewer than $n$ steps.
+
+== Banach Fixed Point Theorem
+We will start by deriving a general convergence theory for an iteration process. even with a more general, not necessarily linear $F: RR^n arrow RR^n$.
+
+#definition("contraction mapping")[
+  A mapping $F: RR^n arrow RR^n$ is called a _contraction mapping_ with repect to a norm $norm(dot)$ on $RR^n$ if there exists a constant $0 lt.eq q lt.eq 1$ such that
+  $
+    norm(F(x)-F(y)) lt.eq q norm(x-y), forall x, y in RR^n
+  $
+  A contraction mapping is Lipschitz continuous with Lipschitz constant $q lt 1$.
+]
+
+#theorem("Banach Fixed Point Theorem")[
+  Let $F: RR^n arrow RR^n$ be a contraction mapping with respect to a norm $norm(dot)$ on $RR^n$. Then, there exists a unique fixed point $x^ast in RR^n$ such that $F(x^ast)=x^ast$. The sequence $bold(x)_(j+1):=F(bold(x)_j)$ converges for every starting point $bold(x)_0 in RR^n$ to the fixed point $x^ast$. Furthermore, we have the error estimates
+  $
+    norm(bold(x)^ast - bold(x)_j) lt.eq & q^j / (1 - q) norm(bold(x)_1 - bold(x)_0) space space "priori" \
+    norm(bold(x)^ast - bold(x)_j) lt.eq & q / (1-q) norm(bold(x)_j - bold(x)_(j-1)) space space "posteriori"
+  $
+]
 
 == On the Convergence of Iterative Methods
 The basic idea of iterative methods is to construct a sequence of vectors $bold(x^k)$ that enjoy the property of _convergence_
@@ -770,10 +805,10 @@ $ text("Given") bold(x)^0, bold(x)^(k+1)=B bold(x^k) + bold(f), k #sym.gt.eq 0 $
 
 where $B$ is an $n times n$ square matrix called the _iteration matrix_ and $bold(f)$ is a vector that is obtained from the right-hand side $bold(b)$.
 
-having denoted by $B$ an $n × n$ square matrix called the iteration matrix and by $bold(f)$ a vector that is obtained from the right hand side $bold(b)$.
+having denoted by $B$ an $n times n$ square matrix called the iteration matrix and by $bold(f)$ a vector that is obtained from the right hand side $bold(b)$.
 
 #definition("Consistent")[
-  An iterative method of the form @IterativeMethod is said to be _consistent_ with @problem1 if $bold(f)$ and $B$ are such that $bold(x)=bold(B\x)+bold(f)$. Equivalently,
+  An iterative method of the form @IterativeMethod is said to be _consistent_ with @linearsystem if $bold(f)$ and $B$ are such that $bold(x)=bold(B\x)+bold(f)$. Equivalently,
 
   $ bold(f)=(1-B)A^(-1) bold(b) $
 
@@ -789,7 +824,7 @@ having denoted by $B$ an $n × n$ square matrix called the iteration matrix and 
 
 
 #theorem("Convergence of Iterative method")[
-  Let @IterativeMethod be a consistent method. Then, the sequence of vectors ${x^(k)}$ converges to the solution of @problem1 for any choice of $x^((0)) "iff" rho(B) < 1$.\
+  Let @IterativeMethod be a consistent method. Then, the sequence of vectors ${x^(k)}$ converges to the solution of @linearsystem for any choice of $x^((0)) "iff" rho(B) < 1$.\
   *Proof*. From @error and the consistency assumption, the recursive relation $bold(e)^(k+1)=B\e^(k)$ is obtained:
   $
     bold(e)^(k+1)= x^(k+1) - x^(k)= B x^(k)+f - (B x+f) =B e^(k)
@@ -808,6 +843,95 @@ having denoted by $B$ an $n × n$ square matrix called the iteration matrix and 
   + $R_m(B)=-1/ m log norm(B^m)$ the _average convergence rate_ after m steps.
 ]
 
+== The Jacobi and Gauss-Seidel Methods
+After this general discussion, we return to the question of how to choose the iteration matrix $B$. Our initial approach is based upon a splitting
+$
+  B = C^(-1)(C-A)=I-C^(-1)A, space space bold(b) = C^(-1) bold(b)
+$
+with a matrix $C$, which should be sufficiently close to $A$ but also easily invertible.
+
+Next, we decompose A in its lower-left sub-diagonal part, its diagonal
+part and its upper-right super-diagonal part
+$
+  A = L + D + R
+$
+with
+$
+  L = cases(
+    a_(i j) "if" i gt j ,
+    0 "else"
+  ) space space D = cases(
+    a_(i j) "if" i = j ,
+    0 "else"
+  ) space space R = cases(
+    a_(i j) "if" i lt j ,
+    0 "else"
+  )
+$
+The simplest possible approximation to $A$ is then given by picking its diagonal part $D$ for $B$ so that the iteration matrix becomes
+$
+  B_J = I - C^(-1) A = I - D^(-1) (L + D + R) = -D^(-1) (L + R)
+$
+with entries
+$
+  b_(i j) = cases(
+    -a_(i j) slash a_(i i) "if" i eq.not j ,
+    0 "else"
+  )
+$
+This means that we can write the iteration defined by
+$
+  bold(x)^(k+1) = -D^(-1) (L + R) bold(x)^k + D^(-1) bold(b)
+$
+
+In the Jacobi method, once an arbitrarily initial guess $x^((0))$ is given, the solution is updated by the formula:
+
+$ x_i^((k+1)) = 1 / a_(i\i) (b_i - sum_(j=1 \ j eq.not i)^(n) a_(i\j) x_j^((k))), i=1, dots, n $ <JacobiMethod>
+
+In general, each iteration costs $O(n^2)$ operations, so the Jacobi method is competitive if the number of iterations is less than $n$. If $A$ is sparse matrix, then the cost is only $n$ flops per iteration.
+
+It should be noted that the solutions $bold(x)_i^((k+1))$ can be computed fully in parallel (very competitive for large scale systems).
+
+#theorem("Convergence of the Jacobi Method")[
+  The Jacobi method converges for every starting point if the matrix A is strictly row diagonally dominant.
+  \
+  *Proof:* We use the infinity norm to calculate the norm of the iteration matrix $B_J$ as
+  $
+    norm(B_J) = max_(1 lt.eq i lt.eq n) sum_(k=1)^n |b_(i k)|=max_(1 lt.eq i lt.eq n) sum_(k=1, k eq.not i)^n (|a_(i k)|) / (|a_(i i)|)
+  $
+]
+
+// A generalization of the Jacobi method is the over-relaxation method(or JOR), in which, having introduced a relaxation parameter $omega$, @JacobiMethod is replaced by:
+
+// $
+//   x_i^((k+1)) = (1 - omega) x_i^((k)) + omega (b_i - sum_(j=1 \ j eq.not i)^(n) a_(i\j) x_j^(( k ))) / a_(i\i), i=1, dots, n
+// $ <OverRelaxationMethod>
+
+// The corresponding iteration matrix is:
+
+// $ B_(j_w)=omega B_j + (1-omega)I $
+
+// This method is consistent if any $omega eq.not 0$ and for $omega=1$ it coincides with the Jacobi method.
+
+
+
+The Gauss-Seidel method diﬀers from the Jacobi method in the fact that at the $k+1$th step the available values of $x_i^((k+1))$ are being used to update the solution:
+$
+  x_i^((k+1))= (b_i - sum_(j=1)^(i-1) a_(i\j) x_j^((k+1)) - sum_(j=i+1)^(n) a_(i\j) x_j^((k))) / a_(i\i), i=1, dots, n
+$ <GaussSeidelMethod>
+To see that this scheme is consistent and to analyse its convergence, we have to find iteration matrix $B$. We rewrite @GaussSeidelMethod as
+$
+  a_(i i) x_i^((k+1)) + sum_(j=1)^(i-1) a_(i j) x_j^((k+1)) = b_i - sum_(j=i+1)^(n) a_(i j) x_j^((k))
+$
+which translates into $(L+D) bold(x)^((k+1))=-R bold(x)^((k))+b$. Hence, if we define $C = (L+D)^(-1)$ and use $C-A=-R$, we note that the scheme is indeed consistent and that the iteration matrix of the Gauss-Seidel method is given by
+$
+  B_(G S) = -(L+D)^(-1) R
+$
+
+#theorem("Convergence of the Gauss-Seidel Method")[
+  If $A in RR^(n times n)$ is symmetrice and positive definite then the Gauss-Seidel method converges.
+]
+
 == Stopping Criteria
 The convergence of an iterative method is monitored by means of a stopping criterion. We can easily introduce the following criteria:
 $
@@ -823,7 +947,6 @@ $
   norm(bold(x)-bold(x^((k)))) / norm(bold(x^((k)))) lt.eq K( P^(-1) A ) norm(z^((k))) / norm(bold(b)) arrow.r.double.long norm(z^((k))) / norm(bold(b)) lt.eq epsilon
 $
 where $z^((k))= P^(-1) bold(r)^k$.
-
 \ *Distance between consecutive iterations*: The iteration is stopped when the distance between consecutive iterates is small enough, define the distance $bold(delta)^((k))=bold(x)^((k+1))-bold(x)^((k))$, then the stopping criterion is:
 $
   norm(bold(delta)^((k))) lt.eq epsilon
@@ -834,7 +957,6 @@ $
 $
 Therefore this is a “good” stopping criterion only if $rho(B) << 1$.
 
-== Linear Iterative Methods
 A general technique to devise consistent linear iterative methods is based on an additive splitting of the matrix $A$ of the form $A=P−N$, where $P$ and $N$ are two suitable matrices and $P$ is nonsingular. For reasons that will be clear in the later sections, $P$ is called _preconditioning matrix or preconditioner_.
 
 Precisely, given $x^((0))$, one can compute $x^((k))$ for $k gt.eq.slant$, solving the system:
@@ -849,65 +971,6 @@ where the residual $ r^((k))=b-A x^((k)) $ is the vector that measures the error
 
 Let us mention two results that ensure convergence of the iteration @LinearIterativeMethod2, provided suitable conditions on the splitting of A are fulfilled.
 
-=== Jacobi, Gauss-Seidel and Relaxation Methods
-#heading(
-  level: 4,
-  outlined: false,
-  "Jacobi Method and Over-Relaxation",
-)
-If the diagonal entries of $A$ are nonzero, we can single out in each equation the corresponding unknown, obtaining the equivalent linear system.
-
-$
-  x_i = (b_i - sum_(j=1 \ j eq.not i)^(n) a_(i\j) x_j) / a_(i\i), i=1, dots, n
-$
-
-In the Jacobi method, once an arbitrarily initial guess $x^((0))$ is given, the solution is updated by the formula:
-
-$ x_i^((k+1)) = (b_i - sum_(j=1 \ j eq.not i)^(n) a_(i\j) x_j^((k))) / a_(i\i), i=1, dots, n $ <JacobiMethod>
-
-This amounts to performing the following splitting for A:
-
-#align(center)[
-  $P = D, N = D− A = E + F$
-]
-
-where $D$ is the diagonal matrix of the diagonal entries of $A$, $E$ is the lower triangular matrix, and $F$ is the upper triangular matrix:
-
-#figure(image("../figures/partition1.jpg", height: 20%))
-
-The iteration matrix of the Jacobi method is thus given by
-
-$ B_j = D^(-1) (E + F) = I - D^(-1) A $
-
-A generalization of the Jacobi method is the over-relaxation method(or JOR), in which, having introduced a relaxation parameter $omega$, @JacobiMethod is replaced by:
-
-$
-  x_i^((k+1)) = (1 - omega) x_i^((k)) + omega (b_i - sum_(j=1 \ j eq.not i)^(n) a_(i\j) x_j^(( k ))) / a_(i\i), i=1, dots, n
-$ <OverRelaxationMethod>
-
-The corresponding iteration matrix is:
-
-$ B_(j_w)=omega B_j + (1-omega)I $
-
-This method is consistent if any $omega eq.not 0$ and for $omega=1$ it coincides with the Jacobi method.
-
-#heading(
-  level: 4,
-  outlined: false,
-  "The Gauss Seidel method",
-)
-The Gauss-Seidel method diﬀers from the Jacobi method in the fact that at the $k+1$th step the available values of $x_i^((k+1))$ are being used to update the solution:
-$
-  x_i^((k+1))= (b_i - sum_(j=1)^(i-1) a_(i\j) x_j^((k+1)) - sum_(j=i+1)^(n) a_(i\j) x_j^((k))) / a_(i\i), i=1, dots, n
-$
-This method amounts to performing the following splitting for $A$:
-$
-  P = D - E, N = F
-$
-and the iteration matrix is:
-$
-  B_(G S) = (D - E)^(-1) F
-$
 
 == Stationary and Nonstationary Iterative Methods
 Devoted by

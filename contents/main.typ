@@ -203,12 +203,12 @@ $
   norm(A)_p = sup_(bold(x) eq.not 0) norm(A bold(x))_p / norm(bold(x))_p
 $
 
-The 1-norm(column sum norn):
+The 1-norm(_column sum norn_):
 $
   norm(A)_1 = max_(j=1, dots, n)^n sum_(i=1)^m |a_(i\j)|
 $
 
-The infinity-norm(row sum norm):
+The infinity-norm(_row sum norm_):
 $
   norm(A)_(infinity) = max_(i=1, dots, m)^m sum_(j=1)^n |a_(i\j)|
 $
@@ -932,6 +932,8 @@ $
   If $A in RR^(n times n)$ is symmetrice and positive definite then the Gauss-Seidel method converges.
 ]
 
+If $A$ is tridiagonal, Jacobi will converge iff the Gauss-Seidel method also converges.
+
 == Stopping Criteria
 The convergence of an iterative method is monitored by means of a stopping criterion. We can easily introduce the following criteria:
 $
@@ -972,7 +974,7 @@ where the residual $ r^((k))=b-A x^((k)) $ is the vector that measures the error
 Let us mention two results that ensure convergence of the iteration @LinearIterativeMethod2, provided suitable conditions on the splitting of A are fulfilled.
 
 
-== Stationary and Nonstationary Iterative Methods
+== Richardson Iteration
 Devoted by
 $
   R_p = I - P^(-1) A
@@ -998,16 +1000,31 @@ To summarize, a nonstationary Richardson method requires at each $k+1$th step th
 + compute the acceleration parameter $alpha_k$
 + update the solution $bold(x)^((k+1))=bold(x)^((k))+alpha_k bold(z)^((k))$
 + update the residual $bold(r)^((k+1))=bold(r)^((k))-alpha_k A bold(z)^((k))$
-#theorem("Convergence")[
+
+#theorem("Convergence of stational Richardson method")[
   Assume that P is a nonsingular matrix and that $P^(-1)A$ has positive real eigenvalues, ordered in such a way that $lambda_1 gt.eq lambda_2 gt.eq dots gt.eq lambda_n gt 0$. Then, the stationary Richardson method converges if and only if $0 lt.eq alpha lt.eq 2 / lambda_1$. Moreover, letting
   $
     alpha_("opt") = 2 / (lambda_1 + lambda_n)
-  $
+  $ <alpha_opt>
   the spectral radius of the iteration matrix $R_alpha$ is minimum if $alpha=alpha_("opt")$, with
   $
     rho_("opt") = min_{alpha} rho(R_alpha) = (lambda_1 - lambda_n) / (lambda_1 + lambda_n)
   $
 ]
+
+#theorem("Convergence of nonstationary Richardson method")[
+  Under the same assumption on $P$ and $A$, the dynamic Richardson method converges if for instance $alpha_k$ is chosen in the following way:
+  $
+    alpha_k = ((bold(z)^((k)))^T bold(r)^((k))) / ((bold(z)^((k)))^T A bold(z)^((k)))
+  $ <alpha_k>
+  where $bold(z)^((k))=P^(-1) bold(r)^((k))$ is the preconditioned residual.
+  \
+  For both choices, @alpha_opt and @alpha_k, the following error estimates hold:
+  $
+    norm(bold(e)^((k)))_A lt.eq ((K(P^(-1) A) - 1) / (K(P^(-1) A) + 1))^k norm(bold(e)^(0))_A
+  $
+]
+
 #example("Preconditioned Stational Richardson Method")[
   #pseudocode-list(
     line-numbering: none,

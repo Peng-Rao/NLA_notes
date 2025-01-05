@@ -505,6 +505,71 @@ In general, fixed point iterations are terminated when the absolute value of the
 
 #pagebreak()
 
+= Approximation of functions and data
+Approximating a function $f$ consists of replacing it by another function $tilde(f)$ of simpler form that may be used as its surrogate. For example, instead of computing $integral_a^b f(x) d x$, one carries out the axcat computation of $integral_a^b tilde(f)(x) d x$. In these cases we aim at constructing a continous function $tilde(f)$ that could represent the empirical law which is behind the finite set of data.
+
+== Interpolation
+In several applications it may happen that a function is known only through its values at some given points. We are therefore facing a case where $n+1$ couples ${x_i, y_i}, i=0, dots, n$, are given; the points $x_i$ are all distinct and are called _nodes_.
+
+In such a situation it seems natural to require the approximate function $tilde(f)$ to satisfy the set of relations:
+$
+  tilde(f)(x_i) = y_i, i=0, dots, n
+$ <interpolation_conditions>
+Such $tilde(f)$ is called _interpolants_ of the set of data and @interpolation_conditions are the interpolation conditions.
+
+== Polynomial Interpolation
+Let us focus on the polynomial interpolation. The following result holds:
+
+#theorem("Weierstrass Approximation Theorem")[
+  Let $f$ be a continuous function in $[a, b]$. Then, for any $epsilon gt 0$, there exists a polynomial $P_n(x)$ of degree $lt.eq n$ such that
+  $
+    |f(x) - P_n(x)| lt epsilon, space space forall x in [a, b]
+  $
+]
+
+#theorem("Existence and Uniqueness of the Interpolant")[
+  For any set of couples ${x_i, y_i}, i=0, dots, n$, with distinct nodes $x_i$, there exists a unique polynomial of degree less than or equal to $n$, which we indicate by $Pi_n$ and call interpolating polynomial of the values $y_i$ at the nodes $x_i$, such that
+  $
+    P_n (x_i) = y_i, space space i=0, dots, n
+  $
+  In the case where the ${y_i, i=0,dots,n}$ represent the values of a continous function $f$, $P_n$ is called interpolating polynomial of $f$ and will be denoted by $P_n f$.
+]
+
+== Lagrange Interpolation
+In order to obtain an expression for $P$, we start from a very special case where $y_i$ vanishes for all $i$ apart from $i=k$ (for a fixed $k$) for which $y_k=1$. Then setting $L_k (x)=P_n (x)$, we must have:
+$
+  L_k (x_i) = delta_(i k)=cases(
+    1 space space i=k,
+    0 space space i eq.not k
+  ), space space i=0, dots, n
+$
+The functions $L_(k, n)(x)$ have the following expression:
+$
+  L_(k, n)(x)=product_(i=0, i eq.not k)^n (x-x_i) / (x_k-x_i), n gt.eq 1, space space L_(0, 0)(x)=1
+$
+$P(x)=sum_(k=0)^n L_(k, n)(x) f(x_k)$ is a polynomial of degree $lt.eq n$ that interpolates $f$ at $x_0, dots, x_n$. This representation is called the Lagrange form of the interpolating polynomial.
+
+== Trigonometry Interpolation
+We want to approximate a periodic function $f: [0, 2 pi] arrow CC$ one satisfying $f(0)=f(2 pi)$, by a trigonometry polynomial $tilde(f)$ which interpolates $f$ at $n+1$ points $x_i=(2 pi i) / (n+1), i=0, dots, n$. The constant step size is
+$
+  h = (2 pi) / (n+1)
+$
+The Lagrange interpolator may not approximate well far from the nodes, as it is a polynomial of degree $n$ and generally not periodic.
+
+In particular, if $n$ is even, $tilde(f)$ will have the form
+$
+  tilde(f)(x) = a_0 / 2 + sum_(k=1)^M [a_k cos(k x) + b_k sin(k x)], space space M=n / 2
+$
+
+If $n$ is odd
+$
+  tilde(f)(x) = a_0 / 2 + sum_(k=1)^M [a_k cos(k x) + b_k sin(k x)] + a_(M+1) cos((M+1)x), space space M=(n-1) / 2
+$
+
+== Least Squares Approximation
+
+#pagebreak()
+
 = Sparse matrices
 == Sparse matrices storage formats
 Sparse matrices are matrices that contain a large number of zero elements. The storage of these matrices can be optimized by using different formats. The most common formats are:

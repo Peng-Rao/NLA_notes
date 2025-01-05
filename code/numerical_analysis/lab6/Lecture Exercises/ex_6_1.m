@@ -24,7 +24,8 @@ spy(P)
 % the last row of A has become the second row, 
 % and the rows from 2 to 6 of A have become rows 3 to 7. 
 % See also Figure 1.
-
+figure("Name",sprintf("Pattern of Matrix A"))
+spy(A)
 figure("Name",sprintf("Pattern of Matrix L"))
 spy(L)
 figure("Name",sprintf("Pattern of Matrix U"))

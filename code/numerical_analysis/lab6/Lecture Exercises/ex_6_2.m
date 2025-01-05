@@ -15,7 +15,7 @@ if all(eig_A>0) && all(eig_T>0)
 % The fact that all eigenvalues are positive reveals that they are also positive definite.
     fprintf("Positive definite Matrices\n");
 end
-
+  
 %% Point b
 % Apply the Richardson method starting from x = 0, with a tolerance equal to
 % 10−6 and P = I. Compare the required number of iterations (if the method is
@@ -24,10 +24,10 @@ end
 x0 = zeros(n, 1); tol = 1e-6; maxit = 10000; 
 % b.1
 alpha = 0.2;
-rho_1=max(abs(eig(I - alpha*A))) % less than 1--> convergence OK
+rho_1=max(abs(eig(I - alpha*A))); % less than 1--> convergence OK
 % or since the Matrix A is s.d.p.
 % alpha_max= 2/max(eig(P\A)); %alpha<alpha_max---> convergent
-[x1, iter1, incr1] = prec_rich_method(A, b, I, alpha, x0, tol, maxit)
+[x1, iter1, incr1] = richprec(A, b, I, alpha, x0, tol, maxit);
 
 %b.2
 alpha = 0.33;
@@ -37,7 +37,7 @@ rho_2=max(abs(eig(I - alpha*A))) % greater than 1 --> NOT convergent
 
 alpha = 2/(min(eig_A) + max(eig_A));
 rho_3=max(abs(eig(I - alpha*A))) % less than 1-->optimal convergence
-[x3, iter3, incr3] = prec_rich_method(A, b, I, alpha, x0, tol, maxit)
+[x3, iter3, incr3] = richprec(A, b, I, alpha, x0, tol, maxit)
 
 % Among the proposed values, the minimum number of iterations is obtained
 % at alpha = alpha_opt
@@ -52,7 +52,7 @@ Tinv_A = T\A;
 eig_Tinv_A = eig(Tinv_A);
 alpha = 2/(min(eig_Tinv_A) + max(eig_Tinv_A));
 rho_4=max(abs(eig(I - alpha*Tinv_A))) % less than 1
-[x4, iter4, incr4] = prec_rich_method(A, b, T, alpha, x0, tol, maxit)
+[x4, iter4, incr4] = richprec(A, b, T, alpha, x0, tol, maxit)
 
 cond_A = cond(A)
 cond_Tinv_A = cond(Tinv_A)

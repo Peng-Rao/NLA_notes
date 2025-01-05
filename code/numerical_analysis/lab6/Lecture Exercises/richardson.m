@@ -1,46 +1,44 @@
-function [x,it,res] = richardson(A,b,x0,alpha,toll,nmax)
+function [x, it, res] = richardson(A, b, x0, alpha, toll, nmax)
+    % Stationary Richardson Method
+    %
+    % Parameters:
+    %   A: system matrix
+    %   b: right-hand side vector
+    %   x0: initial guess vector
+    %   alpha: Richardson coefficient
+    %   toll: tolerance on the normalized residual
+    %   nmax: maximum number of iterations
+    %
+    % Outputs:
+    %   x: obtained solution
+    %   it: number of iterations performed
+    %   res: vector containing the normalized residuals
 
-% Metodo di Richardson stazionario
-%
-% A: matrice del sistema
-% b: termine noto
-% x0: vettore iniziale
-% alpha: coefficiente di Richardson
-% toll: tolleranza sul residuo normalizzato
-% nmax: massimo numero di iterazioni
-%
-% x: soluzione ottenuta
-% it: numero di iterazioni effettuate
-% res: vettore contenente i residui normalizzati.
+    n = size(b, 1);
 
-n = size(b,1);
+    % Check that matrix A is square and that, together with the initial guess
+    % x0, it has dimensions compatible with b.
+    if ((size(A, 1) ~= n) || (size(A, 2) ~= n) || (size(x0, 1) ~= n))
+        error('Incompatible dimensions')
+    end
 
-%Controlliamo che la matrice A sia quadrata e che, insieme al guess
-%iniziale x0, abbia dimensioni compatibili con b.
-if ((size(A,1) ~= n) || (size(A,2) ~= n) || (size(x0,1) ~= n))
-  error('Dimensioni incompatibili')
+    % Initialize x as x0, compute the residual and the normalized residual
+    x = x0;
+    r = b - A * x;
+    resk = norm(r) / norm(b); 
+    res = resk;
+
+    % Initialize the iteration index
+    it = 0;
+
+    while (resk > toll && it < nmax)
+        it = it + 1;
+        % Compute the new x according to the Richardson method
+        x = x + alpha * r;
+        % Compute the residual and the normalized residual
+        r = b - A * x;
+        resk = norm(r) / norm(b);
+        % Add the normalized residual to the vector of normalized residuals
+        res = [res; resk];
+    end
 end
-
-%Inizializziamo x come x0, calcoliamo il residuo e il residuo normalizzato
-x = x0;
-r = b - A*x;
-resk = norm(r)/norm(b); 
-res = resk;
-
-% Inizializziamo l'indice di iterazione
-it = 0;
-
-while (resk > toll && it < nmax)
-    it = it + 1;
-    % Calcoliamo il nuovo x secondo il metodo di Richardson
-    x = x + alpha*r;
-    % Calcoliamo il residuo e il residuo normalizzato
-    r = b - A*x;
-    resk = norm(r)/norm(b);
-    % Aggiungiamo il residuo normalizzato al vettore dei residui
-    % normalizzati.
-    res = [res; resk];
-end
-
-
-

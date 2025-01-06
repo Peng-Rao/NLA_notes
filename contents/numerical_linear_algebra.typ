@@ -611,6 +611,126 @@ The corresponding polynomial $tilde(f)(x)=a_0+a_1 x$ is known as the _least squa
 
 #pagebreak()
 
+= Numerical differentiation and integration
+Concerning integration, quite often for a generic function *it is not possible to find a primitive in an explicit form*. Even when a primitive is known, its use might not be easy. In all these situations it is necessary to consider numerical methods in order to obtain an approximate value of the quantity of interest, independently of how difficult is the function to integrate or diﬀerentiate.
+
+== Approximation of function derivatives
+Consider a function $f: [a, b] arrow RR$ continuously differentiable in $[a, b]$. We seek an approximation of the first derivative of $f$ at a generic point $macron(x)$ in $(a,b)$.
+
+For $h$ sufficiently small and positive, we can assume that the quantity
+$
+  (sigma_plus f)(macron(x))=(f(macron(x)+h)-f(macron(x))) / h
+$
+is an approximation of $f's(macron(x))$ which is called the _forward finite difference_. To estimate the error, it suffices to expand $f$ in a Taylor series; if $f in C^2(a, b)$, we have
+$
+  f(macron(x)+h)=f(macron(x))+h f's(macron(x)) + h^2 / 2 f''(xi), space space xi in (macron(x), macron(x)+h)
+$
+where $xi$ is a suitable point in the interval $(macron(x), macron(x)+h)$. Therefore
+$
+  (sigma_plus f)(macron(x))=(f'(macron(x)) + h / 2 f''(xi))
+$
+and thus $(sigma_plus f)(macron(x))$ provides a first-order approximation to $f'(macron(x))$ with respect to $h$. Still assuming $f in C^2(a, b)$, with a similar procedure we can derive from the Taylor expansion
+$
+  f(macron(x)-h)=f(macron(x))-h f's(macron(x)) + h^2 / 2 f''(eta), space space eta in (macron(x)-h, macron(x))
+$
+The backward finite difference is defined as
+$
+  (sigma_minus f)(macron(x))=(f(macron(x))-f(macron(x)-h)) / h
+$
+Finally, we introduce the _centered finite diﬀerence_ formula
+$
+  (sigma f)(macron(x))=(f(macron(x)+h)-f(macron(x)-h)) / (2h)
+$
+
+== Numerical integration
+Numerical methods suitable for approximating the integral
+$
+  I(f)=integral_a^b f(x) d x
+$
+where $f$ is an arbitrary continuous function in $[a, b]$.
+
+=== Midpoint formula
+A simple procedure to approximate $I(f)$ can be devised by partitioning the interval $[a, b]$ into subintervals $I_k=[x_(k-1), x_k], k=1, dots, M$, with $x_k=a+k H, k=0, dots, M$ and $H=(b-a) slash M$. Since
+$
+  I(f)=sum_(k=1)^M integral_(I_k) f(x) d x
+$
+on each sub-interval $I_k$ we can approximate the exact integral of $f$ by that of a polynomial $macron(f)$ approximating $f$ on $I_k$. The simplest solution consists in choosing $macron(f)$ as the constant polynomial interpolating $f$ at the middle point of $I_k$:
+$
+  macron(x) = (x_(k-1)+x_k) / 2
+$
+In such a way we obtain the composite midpoint quadrature formula
+$
+  I^c_(m p) (f) = H sum_(k=1)^M f(macron(x_k))
+$
+The symbol $m p$ stands for midpoint, while $c$ stands for composite. This formula is second-order accurate with respect to $H$. More precisely, if $f$ is continously differentiable up to its second derivative in $[a, b]$, we have
+$
+  I(f) - I^c_(m p) (f) = -H^2 / 24 (b-a) f''(xi), space space xi in (a, b)
+$
+The classical _midpoint formula_ (or rectangle formula) is obtained by taking $M = 1$ in, using the midpoint rule directly on the interval $[a, b]$:
+$
+  I_(m p) (f) = (b-a) f((a+b) / 2)
+$
+The error is now given by
+$
+  I(f) - I_(m p) (f) = (b-a)^3 / 24 f''(xi), space space xi in (a, b)
+$
+
+#figure(
+  image("../figures/midpoint_formula.jpg", width: auto),
+  caption: "The composite midpoint formula (left); the midpoint formula (right)",
+)
+
+=== Trapezoidal formula
+Another formula can be obtained by replacing $f$ on $I_k$ by the linear polynomial interpolating $f$ at the nodes $x_(k-1)$ and $x_k$. This yields
+$
+  I_t^c (f)=&H / 2 sum_(k=1)^M [f(x_k)+f(x_(k-1))] \
+  =& H / 2 [f(a)+f(b)] + H sum_(k=1)^(M-1) f(x_k)
+$
+This formula is called the _composite trapezoidal formula_, and is second-order accurate with respect to $H$. The error is given by
+$
+  I(f) - I_t^c (f) = -H^2 / 12 (b-a) f''(xi)
+$
+for the quadrature error for a suitable point $xi in (a, b)$, provided that $f in C^2([a, b])$. When $M=1$, we obtain
+$
+  I_t (f) = (b - a) / 2 [f(a)+f(b)]
+$
+
+#figure(
+  image("../figures/trapezoidal_formula.jpg", width: auto),
+  caption: "The composite trapezoidal formula (left); the trapezoidal formula (right)",
+)
+
+which is called the trapezoidal formula because of its geometrical interpretation. The error induced is given by
+$
+  I(f) - I_t (f) = (b-a)^3 / 12 f''(xi), space space xi in (a, b)
+$
+
+=== Simpson formula
+The Simpson formula can be obtained by replacing the integral of $f$ over each $I_k$ by that of its interpolating polynomial of degree 2 at the nodes $x_(k-1), macron(x)_k=(x_(k-1)+x_k) slash 2$ and $x_k$,
+$
+  P_2 f(x) =& (2(x - macron(x)_k)(x - x_k)) / H^2 f(x_(k-1))\
+  +& (4(x_(k-1)-x)(x-x_k)) / H^2 f(macron(x)_k) + (2(x-macron(x)_k)(x-x_(k-1))) / H^2 f(x_k)
+$
+The resulting formula is called the _composite Simpson quadrature formula_, and reads
+$
+  I_s^c (f) = H / 6 sum_(k=1)^M [f(x_(k-1))+4 f(macron(x)_k)+f(x_k)]
+$
+One can prove that it induces the error
+$
+  I(f) - I_s^c (f) = - (b-a) / 180 H^4 / 16 f^((4))(xi)
+$
+where $xi$ is a suitable point in $[a, b]$, provided that $f in C^4([a, b])$. It is therefore fourth-order accurate with respect to $H$. When $M=1$, we obtain the _Simpson formula_
+$
+  I_s (f) = (b-a) / 6 [f(a)+4 f((a+b) / 2)+f(b)]
+$
+The error is now given by
+$
+  I(f) - I_s (f) = - 1 / 16 (b-a)^5 / 180 f^((4))(xi)
+$
+for a suitable $xi in [a, b]$.
+
+#pagebreak()
+
 = Sparse matrices
 == Sparse matrices storage formats
 Sparse matrices are matrices that contain a large number of zero elements. The storage of these matrices can be optimized by using different formats. The most common formats are:

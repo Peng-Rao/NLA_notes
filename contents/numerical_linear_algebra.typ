@@ -567,6 +567,47 @@ $
 $
 
 == Least Squares Approximation
+As already noticed, a Lagrange interpolation does not guarantee a better approximation of a given function when the polynomial degree gets large. This problem can be overcome by composite interpolation (such as piecewise linear polynomials or splines). However, neither are suitable to extrapolate information from the available data, that is, to generate new values at points lying outside the interval where interpolation nodes are given.
+
+Assume that the data ${(x_i, y_i), i=0, dots, n}$. For a given integer $m gt.eq 1$ we look for a polynomial $tilde(f) in PP_m$ which satisfies the inequality
+$
+  sum_(i=0)^n [y_i - tilde(f)(x_i)]^2 lt.eq sum_(i=0)^n [y_i - p_m (x_i)]^2
+$
+for every polynomial $p_m in PP_m$. Should it exist, $tilde(f)$ will be called the _least squares approximation_ in $PP_m$ of the set of data ${(x_i, y_i), i=0, dots, n}$. Unless $m gt.eq n$, in general it will not be possible to guarantee that $tilde(f)(x_i)=y_i$ for all $i=0, dots, n$.
+
+Setting
+$
+  tilde(f)(x) = a_0 + a_1 x + dots + a_m x^m
+$
+where the coefficients $a_0, dots, a_m$ are unknown, the least squares approximation can be restated as follows: find the coefficients $a_0, dots, a_m$ such that
+$
+  Phi(a_0, a_1, dots, a_m) = min_(b_i, i=0, dots, m) Phi(b_0, b_1, dots, b_m)
+$
+where
+$
+  Phi(b_0, b_1, dots, b_m)=sum_(i=0)^n [y_i - (b_0 + b_1 x_i + dots + b_m x_i^m)]^2
+$
+We solve this problem in the special case when $m = 1$. Since
+$
+  Phi(b_0, b_1)=sum_(i=0)^n [y_i^2+b_0^2+b_1^2 x_i^2 + 2 b_0 b_1 x_i - 2b_0 y_i - 2b_1 x_i y_i^2]
+$
+the graph of $Phi$ is a convex paraboloid. The point $(a_0, a_1)$ at which $Phi$ attains its minimum satisfies the conditions
+$
+  (partial Phi) / (partial b_0)(a_0, a_1) = 0, space space (partial Phi) / (partial b_1)(a_0, a_1) = 0
+$
+By explicitly computing the two partial derivatives we obtain
+$
+  sum_(i=0)^n [a_0 + a_1 x_i - y_i] = 0, space space sum_(i=0)^n [x_i (a_0 + a_1 x_i) - x_i y_i] = 0
+$
+which is a system of two equations for the two unknowns $a_0$ and $a_1$:
+$
+  a_0 (n+1) + a_1 sum_(i=0)^n x_i =& sum_(i=0)^n y_i, \ a_0 sum_(i=0)^n x_i + a_1 sum_(i=0)^n x_i^2 =& sum_(i=0)^n x_i y_i
+$
+Setting $D=(n+1) sum_(i=0)^n x_i^2 - (sum_(i=0)^n x_i)^2$, the solution reads:
+$
+  a_0 = 1 / D (sum_(i=0)^n x_i^2 sum_(i=0)^n y_i - sum_(i=0)^n x_i sum_(i=0)^n x_i y_i), \ a_1 = 1 / D ((n+1) sum_(i=0)^n x_i y_i - sum_(i=0)^n x_i sum_(i=0)^n y_i)
+$
+The corresponding polynomial $tilde(f)(x)=a_0+a_1 x$ is known as the _least squares straight line_, or _regression line_.
 
 #pagebreak()
 

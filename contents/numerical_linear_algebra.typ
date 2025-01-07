@@ -840,6 +840,39 @@ $
 $
 Thus the Crank-Nicolson method is consistent with order 2. Its local truncation error tends to 0 as $h^2$. The Crank-Nicolson method is convergent with order 2 with respect to $h$.
 
+== Zero-stability
+There is a concept of stability, called zero-stability, which guarantees that, in a fixed bounded interval, small perturbations of data yield bounded perturbations of the numerical solution when $h arrow 0$.
+
+== Stability on unbounded intervals
+There are several situations in which the Cauchy problem needs to be integrated on very large (virtually infinite) time intervals. In this case, even if $h$ is fixed, $N_h$ tends to infinity, and then results become meaningless. We are therefore interested in methods that are able to approximate the solution for arbitrarily long time-intervals, even with a step-size h relatively "large".
+
+Consider the following _model problem_
+$
+  cases(
+    y'(t) = lambda y(t) space space t in (0, infinity),
+    y(0) = 1
+  )
+$
+where $lambda$ is a negative real number. The exact solution of this problem is $y(t) = e^(lambda t)$, which tends to 0 as $t$ tends to infinity. Applying the forward Euler method, we find that
+$
+  u_0=1, space space u_(n+1)=u_n (1+lambda h)=(1+lambda h)^(n+1), n gt.eq 0
+$
+Thus $lim_(n arrow infinity) u_n=0$ iff
+$
+  -1 lt 1 + h lambda lt 1 arrow.long h lt 2 / abs(lambda)
+$ <stability_condition>
+This condition expresses the requirement that, for _fixed_ $h$, the numerical solution should reproduce the behavior of the exact solution when $t_n$ tends to infinity. If $h gt 2 / abs(lambda)$, then $lim_(n arrow infinity) abs(u_n)=+infinity$. Thus @stability_condition is a stability condition. The property that $lim_(n arrow infinity) u_n=0$ is called _absolute stability_.
+
+In contrast to the forward Euler method, neither the backward Euler method nor the Crank-Nicolson method require limitations on $h$ for absolute stability. In fact, with the backward Euler method we obtain $u_(n+1)=u_n+lambda h u_(n+1)$ and therefore
+$
+  u_(n+1)=(1 / (1-lambda h))^(n+1), n gt.eq 0
+$
+which tends to zero as $n arrow infinity$ for all values if $h gt 0$. Similarly, with the Crank-Nicolson method we obtain
+$
+  u_(n+1) = [(1+(h lambda) / 2) slash (1-(h lambda) / 2)]^(n+1), n gt.eq 0
+$
+which still tends to zero as $n arrow infinity$ for all values of $h gt 0$. We can conclude that the forward Euler method is _conditionally absolutely stable_, while both the backward Euler and Crank-Nicolson methods are _unconditionally absolutely stable_.
+
 #pagebreak()
 
 = Sparse matrices

@@ -51,6 +51,6 @@ y(2)
 % component contains the approximation for t = h = 2. 
 % The result is y(2) = 3.5708. Observing the behavior of the numerical solution, 
 % an oscillatory trend is evident, with y(2) being a maximum. This is 
-% 0consistent with the theory, which states that the forward Euler method is 
+% consistent with the theory, which states that the forward Euler method is 
 % conditionally absolutely stable, specifically requiring 
 % h < 2/\lambda, where lambda is a value that depends on the function f.

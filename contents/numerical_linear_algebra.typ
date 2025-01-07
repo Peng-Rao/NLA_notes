@@ -109,7 +109,7 @@ $
 ]
 
 #theorem("Norm continuity")[
-  Any vector norm $norm(dot)$ defined on V is a continous function of its argument, namely, $forall > 0, exists C > 0$ such that if $norm(x-hat(x)) lt.eq epsilon$ then $norm(x)-norm(hat(x)) lt.eq C epsilon$, for any $x, hat(x) in V$.
+  Any vector norm $norm(dot)$ defined on V is a continuous function of its argument, namely, $forall > 0, exists C > 0$ such that if $norm(x-hat(x)) lt.eq epsilon$ then $norm(x)-norm(hat(x)) lt.eq C epsilon$, for any $x, hat(x) in V$.
 ]
 
 #theorem[
@@ -278,7 +278,7 @@ The norms used for the data and for the solution may not coincide, whenever $d$ 
 #example("Wellposedness of Linear Systems")[
   Consider the problem of solving a linear system $A x = b$. The problem is well-posed if it has below two properties:
   + The problem has a unique solution $x$, which means that the matrix $A$ is invertible.
-  + The solution depends continously on the data.
+  + The solution depends continuously on the data.
 ]
 
 The @3 is however more suitable to express in the following the concept of _numerical stability_, that is, the property that small perturbations on the data yield perturbations of the same order on the solution.
@@ -465,7 +465,7 @@ to determine the intersections between $g(x)$ and the bisector line $y=x$ of the
     lim_(k arrow infinity) x^((k)) = (x^((k+1)) - alpha) / (x^((k)) - alpha) = g'(alpha)
   $
 ] <fixedpointconvergence>
-Let $alpha$ be a fixed point of the a function $g$ which is continous and differentiable in a neighborhood of $alpha$.
+Let $alpha$ be a fixed point of the a function $g$ which is continuous and differentiable in a neighborhood of $alpha$.
 - if $|g'(alpha)| gt 1$, then the sequence $x^((k+1))=g(x^((k)))$ will not converge to $alpha$.
 - if $|g'(alpha)| eq 1$, then no general conclusion can be drawn both convergence and divergence become possibile.
 
@@ -506,7 +506,7 @@ In general, fixed point iterations are terminated when the absolute value of the
 #pagebreak()
 
 = Approximation of functions and data
-Approximating a function $f$ consists of replacing it by another function $tilde(f)$ of simpler form that may be used as its surrogate. For example, instead of computing $integral_a^b f(x) d x$, one carries out the axcat computation of $integral_a^b tilde(f)(x) d x$. In these cases we aim at constructing a continous function $tilde(f)$ that could represent the empirical law which is behind the finite set of data.
+Approximating a function $f$ consists of replacing it by another function $tilde(f)$ of simpler form that may be used as its surrogate. For example, instead of computing $integral_a^b f(x) d x$, one carries out the axcat computation of $integral_a^b tilde(f)(x) d x$. In these cases we aim at constructing a continuous function $tilde(f)$ that could represent the empirical law which is behind the finite set of data.
 
 == Interpolation
 In several applications it may happen that a function is known only through its values at some given points. We are therefore facing a case where $n+1$ couples ${x_i, y_i}, i=0, dots, n$, are given; the points $x_i$ are all distinct and are called _nodes_.
@@ -532,7 +532,7 @@ Let us focus on the polynomial interpolation. The following result holds:
   $
     P_n (x_i) = y_i, space space i=0, dots, n
   $
-  In the case where the ${y_i, i=0,dots,n}$ represent the values of a continous function $f$, $P_n$ is called interpolating polynomial of $f$ and will be denoted by $P_n f$.
+  In the case where the ${y_i, i=0,dots,n}$ represent the values of a continuous function $f$, $P_n$ is called interpolating polynomial of $f$ and will be denoted by $P_n f$.
 ]
 
 == Lagrange Interpolation
@@ -662,7 +662,7 @@ In such a way we obtain the composite midpoint quadrature formula
 $
   I^c_(m p) (f) = H sum_(k=1)^M f(macron(x_k))
 $
-The symbol $m p$ stands for midpoint, while $c$ stands for composite. This formula is second-order accurate with respect to $H$. More precisely, if $f$ is continously differentiable up to its second derivative in $[a, b]$, we have
+The symbol $m p$ stands for midpoint, while $c$ stands for composite. This formula is second-order accurate with respect to $H$. More precisely, if $f$ is continuously differentiable up to its second derivative in $[a, b]$, we have
 $
   I(f) - I^c_(m p) (f) = -H^2 / 24 (b-a) f''(xi), space space xi in (a, b)
 $
@@ -728,6 +728,117 @@ $
   I(f) - I_s (f) = - 1 / 16 (b-a)^5 / 180 f^((4))(xi)
 $
 for a suitable $xi in [a, b]$.
+
+#pagebreak()
+
+= Ordinary diﬀerential equations
+A diﬀerential equation is an equation involving one or more derivatives of an unknown function. If all derivatives are taken with respect to a single independent variable we call it an _ordinary diﬀerential equation_, whereas we have a _partial differential equation_ when partial derivatives are present.
+
+The differential equation (ordinary or partial) has order $p$ if $p$ is the maximum order of differentiation that is present.
+- A numerical method is called a *_one-step method_* if the numerical solution at the next node $t_(n+1)$ depends only on the information related to the previous node $t_n$.
+- A method is called *_multi-step_* if the numerical solution at the next node $t_(n+1)$ depends also on the information related to the previous nodes $t_(n-1), t_(n-2), dots, t_(n-m)$.
+
+== The Cauchy problem
+An ordinary differential equation in general admits an infinite number of solutions. In order to fix one of them we must impose a further condition which prescribes the value taken by this solution at a given point of the integration interval.
+
+We will therefore consider the solution of the so-called _Cauchy problem_ which takes the following form:
+
+Find $y: I arrow.long RR$ such that
+$
+  cases(
+    y'(t) = f(t, y(t)) space space forall x in I \
+    y(t_0) = y_0
+  )
+$ <cauchy_problem>
+where $I$ is an interval of $RR$, $f: I times RR arrow.long RR$ is a given function and $y'$ denots the derivative of $y$ with respect to $t$. Finally, $t_0$ is a point of $I$ and $y_0$ a given value which is called the _initial data_.
+
+#theorem("Existence and Uniqueness of the Solution")[
+  Assume that the function $f(t, y)$ is
+  + continuous with respect to both arguments
+  + _Lipschitz-continuous_ with respect to its second argument, that is, there exists a positive constant $L$ such that
+  $
+    |f(t, y_1) - f(t, y_2)| lt.eq L |y_1 - y_2|, space space forall t in I, y_1, y_2 in RR
+  $
+  Then the soultion $y=y(t)$ of the Cauchy problem exists, is unique and belongs to $C^1 (I)$.
+]
+
+Unfortunately, explicit solutions are available only for very special types of ordinary differential equations. For all these reasons, we seek _numerical methods_ capable of approximating the solution of every family of ordinary differential equations for which solutions do exist.
+
+The common strategy of all these methods consists of subdividing the integration interval $I=[t_0, T]$, with $T lt plus infinity$, into $N_h$ intervals of length $h=(T-t_0)/N_h$; $h$ is called the _discretization step._ Then, at each node $t_n(0 lt.eq n lt.eq N_h-1)$ we seek the unknow value $u_n$ which approximates $y_n=y(t_n)$. The set of values ${u_0=y_0, u_1, dots, u_(N_h)}$ is our _numerical solution_.
+
+== Euler methods
+A classical method, the _forward Euler_ method, generates the numerical solution as follows:
+$
+  u_(n+1) = u_n + h f_n, space space n=0, dots, N_h-1
+$
+where we have used the shorthand notation $f_n=f(t_n, u_n)$. This method is obtained by considering the diﬀerential equation @cauchy_problem at every node $t_n, n=1, dots, N_h$ and replacing the exact derivative $y'(t_n)$ by means of the incremental ratio.
+
+In a similar way, using this time the incremental ratio to approximate $y'(t_(n+1))$, we obtain the _backward Euler_ method:
+$
+  u_(n+1) = u_n + h f_(n+1), space space n=0, dots, N_h-1
+$
+
+Both methods provide an instance of a _one-step_ method since for computing the numerical solution $u_(n+1)$ at the node $t_(n+1)$ we only need the information related to the previous node $t_n$. More precisely, in the forward Euler method $u_(n+1)$ depends exclusively on the value $u_n$ previously computed, whereas in the backward Euler method it depends also on itself through the value $f_(n+1)$. For this reason the first method is called the _explicit_ Euler method and the second the _implicit_ Euler method.
+
+Thus, implicit methods are more costly than explicit methods, since at every time-level $t_(n+1)$ we must solve a nonlinear problem to compute $u_(n+1)$. However, we will see that *implicit methods enjoy better stability properties than explicit ones*.
+
+=== Convergence analysis
+A numerical method is _convergent_ if
+$
+  forall n=0, dots, N_h, space space abs(y_n-u_n) lt.eq C(h)
+$
+where $C(h)$ is infinitesimal with respect to $h$ when $h$ tends to zero. If $C(h)=O(h^p)$ for some $p gt 0$, then we say that the method converges with order $p$. In order to verify that the forward Euler method converges, we write the error as follows:
+$
+  e_n=y_n-u_n=(y_n-u^*_n)+(u^*_n-u_n)
+$
+where
+$
+  u^*_n=y_(n-1)+h f(t_(n-1), u_(n-1))
+$
+denotes the numerical solution at time $t_n$ which we would obtain starting from the exact solution at time $t_(n-1)$.
+
+The term $y_n-u_n^ast$ represents the error produced by a single step of the forward Euler method, whereas the term $u_n^ast-u_n$ represents the propagation from $t_(n-1)$ to $t_n$ of the error accumulated at the previous time-level $t_(n-1)$. The method converges provided both terms tend to zero as $h arrow 0$. Assuming that the second order derivative of $y$ exists and is continuous, we find
+$
+  y_n - u_n^ast = h^2 / 2 y''(xi_n), "for a suitable" xi_n in (t_(n-1), t_n)
+$ <order_2_error>
+The quantity
+$
+  tau_n (h)=(y_n-u^ast_n) / h
+$
+is named *_local truncation error_* of the forward Euler method. More in general, the local truncation error of a given method represents the error that would be generated by forcing the exact solution to satisfy that specific numerical scheme, whereas the *_global truncation error_* is defined as
+$
+  tau(h)=max_(0, dots, N_h) |tau_n (h)|
+$
+The truncation error for the forward Euler method takes the following form:
+$
+  tau(h)=(M h) / 2
+$
+where $M=max_(t in [t_0, T]) abs(y''(t))$.
+
+#figure(
+  image("../figures/euler_method.jpg", width: 70%),
+  caption: [Geometrical representation of a step of the forward Euler method],
+)
+
+From @order_2_error we deduce that $lim_(h arrow 0) tau(h)=0$ , and a method for which this happens is said to be _consistent_. Further, we say that it is consistent with order $p$ if $tau(h)=O(h^p)$ for a suitable integer $p gt.eq 1$.
+
+#theorem("Convergence of the Forward Euler Method")[
+  Assume that the function $f(t, y)$ is Lipschitz-continuous with respect to its second argument. Then the forward Euler method is convergent with order 1.
+  $
+    abs(e_n) lt.eq (e^(L(t_n-t_0))-1) / (L) M / 2 h
+  $
+]
+
+== The Crank-Nicolson method
+Adding together the generic steps of the forward and backward Euler methods we find the so-called _Crank-Nicolson method_
+$
+  u_(n+1) = u_n + h / 2 [f_n + f_(n+1)], space n=0, dots, N_h-1
+$
+If we assume that $y in C^3$, we deduce that
+$
+  tau_n (h)=- h^2 / 12 y'''(xi_n) "for a suitable" xi_n in (t_(n-1), t_n)
+$
+Thus the Crank-Nicolson method is consistent with order 2. Its local truncation error tends to 0 as $h^2$. The Crank-Nicolson method is convergent with order 2 with respect to $h$.
 
 #pagebreak()
 

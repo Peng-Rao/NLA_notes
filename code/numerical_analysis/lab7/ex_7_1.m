@@ -1,3 +1,5 @@
+clear; clc; close all
+
 %% Excercise 7.1
 A = [ 2 -1  0  1;
      -1  4  2 -1;

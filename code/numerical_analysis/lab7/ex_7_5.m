@@ -4,7 +4,8 @@ clc;clear;close all;
       (x(1)^2 + x(2)^2 -1) ./ (x(1)^2 + x(2)^2 + 1)];
  J=@(x)[(4*x(1))./(x(1)^2 + 1)^2, 0;
    (4*x(1))./(x(1)^2 + x(2)^2 + 1).^2, (4*x(2))/(x(1)^2 + x(2)^2 + 1)^2];
-%% 2
+
+%% Use the provided newtonsys.m function to calculate the solution of the proposed nonlinear system.
 tol=1e-6; Nmax=1000;
         
 x0=[1.5;0.5];
@@ -21,12 +22,13 @@ fprintf("Number of iterations: %g\n", iter2)
 fprintf("Solution with x0=[%g,%g]\n", x0);
 fprintf("x1=%d\nx2=%d\n", x2)
 %check
-%fsolve(f, x0)
-%% 3
+% fsolve(f, x0)
+
+%% Comment
 % In both cases, Newton's method converges, as the number of iterations is lower than the set maximum, and no error message is displayed.
-%The nonlinear system considered has (at least) two distinct roots: [1,0]
+% The nonlinear system considered has (at least) two distinct roots: [1,0]
 % and [-1,0], which can be easily verified by hand.
-%Depending on the initial iterate, Newton's method converges to one root rather than the other.
+% Depending on the initial iterate, Newton's method converges to one root rather than the other.
 
 %% 4
 x0=[-1.5;0.5];

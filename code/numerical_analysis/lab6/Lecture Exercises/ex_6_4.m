@@ -1,25 +1,32 @@
-%% Exercise 6.4
-clc;clear; close all;
-format long 
-%% Build the matrix
-n=20;
-A = -diag(ones(n-2,1), -2) - 4* diag(ones(n-1,1), -1) + 10*diag(ones(n, 1), 0)...
-    -diag(ones(n-2,1), +2) - 4* diag(ones(n-1,1), +1);
-%disp(A)
-b=ones(n,1);
-%% Solve Using the non preconditioned Richardson Method
-alpha=0.25; x0=b; tol=1e-3; nmax=500;
+clear; close all;
 
-[x, iter, res] = richardson(A, b,x0, alpha, tol, nmax);
-fprintf("Iterations: %d\n",iter);
-fprintf("Third component of x: %d\n", x(3))  
-res_xn=(b-A*x)/norm(b);
-fprintf("Third component of the residual of x: %d\n", res_xn(3))
+%% define the matrix
+format long
+n = 20;
 
-%% Point b
-% The residual is:
-%res=norm(b-A*x)/norm(b);
-fprintf("Normalized Residual of x in 2-norm: %d\n", res(end))
+% create diagonal
+main_diag = 10 * ones(1, n);
+second_diag = -4 * ones(1, n - 1);
+third_diag = -1 * ones(1, n - 2);
+A = diag(main_diag) + diag(second_diag, -1) + diag(second_diag, 1) + diag(third_diag, -2) + diag(third_diag, 2);
+b = ones(20, 1);
+
+%% a) Solve the proposed system by the stationary Richardson method, with alpha = 0.25
+alpha = 0.25;
+x_0 = b;
+tol = 1e-3;
+max_it = 500;
+P = eye(size(A));
+
+[x_a, iter_a, residual_a] = richprec(A, b, P, alpha, x_0, max_it, tol);
+
+disp("iteration: ");
+disp(iter_a);
+res_a = (b - A * x_a) / norm(b);
+disp("the third component of residual");
+disp(res_a(3));
+
+% Comment
 % As can be seen from this result and the number of iterations taken by the method 
 % (500, which is the maximum number of iterations), 
 % we deduce that the Richardson method did not converge
@@ -28,28 +35,42 @@ fprintf("Normalized Residual of x in 2-norm: %d\n", res(end))
 % This could have been anticipated beforehand, 
 % as the relaxation parameter used,alpha=0.25
 % is greater than the maximum allowed value
-eigs=eig(A);
+
+eigs = eig(A);
 % alpha_max= 2*min((real(eigs)./(abs(eigs).^2)));
 % Since the eigenvalues are real (you can check with isreal(eigs))
-alpha_max=2/max(eigs);
-fprintf("Maximum Alpha: %d\n",alpha_max)
+alpha_max = 2 / max(eigs);
+fprintf("Maximum Alpha: %d\n", alpha_max)
 
-%% Point c
-alpha_opt=2/(max(eigs)+min(eigs));
-fprintf("Optimal Alpha: %d\n",alpha_opt)
-[x2, iter2, incr2] = richardson(A, b,x0, alpha_opt,tol, nmax);
-fprintf("Iterations: %d\n",iter2);
+%% c) with the optimal value of the parameter alpha
 
+alpha = 2 / (max(abs(eig(A))) + min(abs(eig(A))));
+[x_b, iter_b, residual_b] = richprec(A, b, P, alpha, x_0, max_it, tol);
+
+disp("iteration: ");
+disp(iter_b);
+res_b = (b - A * x_b) / norm(b);
+disp("the third component of residual");
+disp(res_b(3));
+
+% Comment
 % In this case, the solution converges within the maximum number of iterations.
 % The convergence here is ensured by using a value of alpha such that 
 % 0<alpha<2/lamda_max
 % In particular, alpha_opt guarantees the least number of iterations.
 
-%% Point d
-alpha2= 0.84; 
-P=-5*diag( ones(n-1,1), -1) + 10*diag( ones(n,1), 0) - 5*diag( ones(n-1,1), +1);
-[x3, iter3, incr3] = richprec(A, b, P, alpha2, x0,nmax, tol);
-fprintf("Iterations: %d\n",iter3);
+%% d) using alpha = 0.84 using tridiagonal preconditioner
+P = diag(10 * ones(20, 1)) + diag(-5 * ones(20 - 1, 1), -1) + diag(-5 * ones(20 - 1, 1), 1);
+alpha = 0.84;
+[x_c, iter_c, residual_c] = richprec(A, b, P, alpha, x_0, max_it, tol);
+
+disp("iteration: ");
+disp(iter_c);
+res_c = (b - A * x_c) / norm(b);
+disp("the third component of residual");
+disp(res_c(3));
+
+% Comment
 % In this case, the Richardson method is very fast.
 % From theory, we know that if the preconditioner is a good approximation of A, 
 % then the number of iterations decreases. 
@@ -59,4 +80,3 @@ fprintf("Iterations: %d\n",iter3);
 % with P (for calculating the residual) is easy to solve, 
 % then the total cost is significantly reduced. 
 % This should be our case since P has a simple structure (tridiagonal).
-

@@ -36,7 +36,7 @@ subplot(1,2,2)
 spy (Ui)
 title('incomplete U')
 
-%% SOlve the system with P=I and P=LiUi;
+%% Solve the system with P=I and P=LiUi;
 eigs_p=eig(((Ui*Li)\A));
 alpha_max=2/(max(eigs_p));
 eigs=eig(A);

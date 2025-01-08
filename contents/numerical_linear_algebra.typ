@@ -1131,6 +1131,10 @@ To reduce fill-in, it may be useful to employ reordering techniques, which consi
 
 #pagebreak()
 
+= Preconditioning
+
+#pagebreak()
+
 = Iterative methods for large linear systems
 Given an $n times n$ real matrix $A$ and a real $n$-vector, the problem is: Find $bold(x)$ belonging to $RR^n$ such that
 
@@ -1436,7 +1440,7 @@ There is not a general roadmap to devise optimal preconditioners. However, an es
 
 Preconditioners can be divided into two main categories: algebraic and functional preconditioners, the diﬀerence being that the algebraic preconditioners are independent of the problem that originated the system to be solved, and are actually constructed via algebraic procedures, while the functional preconditioners take advantage of the knowledge of the problem and are constructed as a function of it.
 
-=== The Gradient Method
+== The Gradient Method
 In the special case of symmetric and positive definite matrices, however, the optimal acceleration parameter can be dynamically computed at each step $k$ as follows.
 
 We first notice that, for such matrices, solving system @LinearIterativeMethod2 is equivalent to minimizing the quadratic form
@@ -1489,19 +1493,19 @@ $
     + *While*(Stopping criterion is not satisfied)
       + Compute parameter $alpha_k = (bold(r)^(k)^T bold(r)^((k))) / (bold(r)^(k)^T A bold(r)^((k)))$
       + Update the solution: $bold(x)^((k+1))=bold(x)^((k)) + alpha_k bold(r)^((k))$
-      + Update the residual: $bold(r)^((k+1))=bold(r)^((k)) - alpha_k A bold(r)^((k))$
+      + Update the residual: $bold(r)^((k+1))=bold(r)^((k)) - alpha_k A bold(r)^((k)) "or" (bold(b)- A bold(x)^((k+1)))$
   ]
 ]
 
 #theorem("Convergence of Gradient Method")[
   Let $A$ be a symmetric and positive definite matrix. Then the gradient method is convergent for any choice of the initial datum $bold(x)^((0))$. Moreover
   $
-    norm(bold(e)^((k+1)))_A lt.eq (K(A) - 1) / (K(A) + 1) norm(bold(e)^((k)))_A
+    norm(bold(e)^((k+1)))_A lt.eq (K(A) - 1) / (K(A) + 1) norm(bold(e)^((k)))_A = ((K(A) - 1) / (K(A) + 1))^k norm(bold(e)^((0)))_A
   $
   where $norm(dot)_A$ is the energy norm defined in @energynorm.
 ]
 
-=== The Conjugate Gradient Method
+== The Conjugate Gradient Method
 The gradient method consists essentially of two phases: choosing a direction $bold(p)^((k))$ and picking up a point of local minimum for $Phi$ along that direction. The latter request can be accommodated by choosing $alpha_k$ as the value of the parameter $alpha$ such that $Phi(bold(x)^((k))+alpha bold(p)^((k)))$ is minimized. Diﬀerentiating with respect to $alpha$ and setting it equal to zero, we obtain the following expression for $alpha_k$:
 $
   alpha_k = (bold(p)^(k)^T bold(r)^((k))) / (bold(p)^(k)^T A bold(p)^((k)))

@@ -390,6 +390,14 @@ Let $f$ be a continuous function in $[a, b]$ which satisfies $f(a) f(b) lt 0$. T
 
 The strategy of the bisection method is to havle the given interval and select that subinterval where $f$ fatures a sign change.
 
+=== Chord Method
+The bisection method is a very robust method, but it is also very slow. The chord method is a faster method, but it is also less robust. The chord method is based on the idea of replacing the curve $(x, f(x))$ by the chord that joins the points $(a, f(a))$ and $(b, f(b))$.
+
+The equation of the chord is:
+$
+  x^((k+1)) = x^((k)) - f(x^((k))) (b - a) / (f(b) - f(a)), k gt.eq 0
+$
+
 == The Newton method
 The sign of the given function $f$ at the endpoints of the subintervals is the only information exploited by the bisection method. A more efficient method can be constructed by exploiting the values attained by $f$ and its derivative. In that case,
 $

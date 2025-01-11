@@ -306,7 +306,7 @@ If $f$ is differentiable, we can express this equality in terms of the Jacobian 
 
 $ K = norm(J(x)) / (norm(f\x) slash norm(x)) $
 
-Problem @1 is called _ill-conditioned_ if $K(d)$ is “big” for any admissible datum d (the precise meaning of “small” and “big” is going to change depending on the considered problem).
+Problem @1 is called _ill-conditioned_ if $K(d)$ is "big" for any admissible datum d (the precise meaning of "small" and "big" is going to change depending on the considered problem).
 
 === Codution of Matrix-Vector Multiplication
 Now we come to one of the condition numbers of fundamental importance in numerical linear algebra.
@@ -1746,8 +1746,18 @@ $
 $
 
 #pagebreak()
+
 = Numerical methods for overdetermined linear systems of equations
 Overdetermined linear systems of equations are systems of equations in which the number of equations is greater than the number of unknowns. In this case, the system is said to be _overdetermined_. When the problems are linear there is a very clean and simple way to find the optimum, if we adopt the sum-of-squares error metric.
+
+== QR Factorization for rectangular matrices
+Let $A in RR(m times n)$ be a rectangular matrix, then
+$ A = Q R $ <QRFactorization>
+where $Q in RR(m times m)$ is an orthogonal matrix and $R in RR(m times n)$ is an upper trapezoidal matrix.
+
+One version of the $Q R$ factorization is _reduced $Q R$ factorization_. Let $A$ be an $m times n$ matrix. The reduced $Q R$ factorization of $A$ is a factorization of the form:
+$ A = hat(Q) hat(R) $ <ReducedQRFactorization>
+where $Q in RR(m times n)$ is an rectangular matrix and $R in RR(n times n)$ is an upper triangular matrix.
 
 == Linear Regression
 If there were no experimental uncertainty the model would fit the data exactly, but since there is noise the best we can do is minimise the error. The problem is:

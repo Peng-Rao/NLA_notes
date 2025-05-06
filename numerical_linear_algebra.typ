@@ -1,8 +1,8 @@
-#import "../template.typ": *
-#import "@preview/codelst:2.0.1": sourcecode
+#import "@local/simple-note:0.0.1": *
 #import "@preview/lovelace:0.3.0": *
+#show: codly-init.with()
 
-#show: template.with(
+#show: simple-note.with(
   title: [ Numerical Linear Algebra ],
   date: datetime(year: 2024, month: 9, day: 16),
   authors: (
@@ -21,9 +21,38 @@
   // cover-image: "./figures/polimi_logo.png",
   background-color: "#FAF9DE",
 )
+
 #set math.mat(delim: "[")
 #set math.vec(delim: "[")
 #set math.equation(supplement: [Eq.])
+
+// define some math symbols and functions
+
+#let Rn = $bold(R)^n$
+#let v = math.bold("v")
+#let w = math.bold("w")
+#let mul_vec = $bold(v_1),dots,bold(v_n)$
+#let norm(v) = $#sym.bar.v.double#math.bold(v)#sym.bar.v.double$
+#let vx = $bold(x)$
+
+#let one_mat(rows, cols) = {
+  let data = ()
+  for i in range(rows) {
+    let row = ()
+    for j in range(cols) {
+      row.push(1)
+    }
+    data.push(row)
+  }
+
+  return math.mat(..data)
+}
+
+#let pythagorean_theorem = $c^2=a^2+b^2$
+
+#let lower_triangular_system = $L bold(x) = bold(b)$
+#let upper_triangular_system = $U bold(x) = bold(b)$
+#let quadratic_form = $bold(x)^T A bold(x)$
 
 = Floating Point Arithmetic
 Since computers use a *finite number* of bits to represent a real number, *they can only represent a finite subset of the real numbers*. In general the range of numbers is sufficient large but there are naturally gaps, which might lead to problems.
@@ -58,7 +87,7 @@ As a consequence, the distribution of floating point numbers is not uniform. Fur
 It is easy to determine the machine precision for the default rounding strategy.
 
 #theorem("Machine Epsilon")[
-  _  For a floating point number system with base B and precision m the machine precision is given by_ $"eps"=B^(1-m)$, we have
+  _ For a floating point number system with base B and precision m the machine precision is given by_ $"eps"=B^(1-m)$, we have
   $
     abs(x-"rd"(x)) lt.eq B^(1-m) abs(x)
   $
@@ -105,7 +134,7 @@ $
 
   We recall that the scalr product in $RR^n$ can be realyed to the p-norms by the H\"older inequality:
 
-  $ |(x,y)| lt.eq norm(x)_p norm(y) _q #h(1cm) "Where" #h(1cm) 1/p + 1/q = 1 $
+  $ |(x,y)| lt.eq norm(x)_p norm(y)_q #h(1cm) "Where" #h(1cm) 1 / p + 1 / q = 1 $
 ]
 
 #theorem("Norm continuity")[
@@ -155,8 +184,7 @@ In dealing with a space of matrices, certain special norms are more useful thant
 ]
 
 #definition("Sub multiplicative")[
-  We say that a matrix norm $norm(dot)$ is _sub-multiplicative_ if $forall A in RR^(n times m), forall B in RR^(m times q)$ we have that $
-  norm(A\B) lt.eq norm(A) norm(B) $
+  We say that a matrix norm $norm(dot)$ is _sub-multiplicative_ if $forall A in RR^(n times m), forall B in RR^(m times q)$ we have that $ norm(A\B) lt.eq norm(A) norm(B) $
 ]
 
 #definition("Fronebius Norm")[
@@ -382,7 +410,7 @@ Let $f$ be a continuous function in $[a, b]$ which satisfies $f(a) f(b) lt 0$. T
 
 #figure(
   image(
-    "../figures/iterations_bisection.jpg",
+    "./figures/iterations_bisection.jpg",
     width: 60%,
   ),
   caption: "Iterations of the bisection method",
@@ -430,7 +458,7 @@ The test on the residual is satisfactory only when $|f'(x)| tilde.eq 1$ in a nei
 
 #figure(
   image(
-    "../figures/error_estimator.jpg",
+    "./figures/error_estimator.jpg",
     width: 70%,
   ),
   caption: [Two situations in which the residual is a poor error estimator: $|f'(x)| gt.double 1$, $|f'(x)| lt.double 1$],
@@ -481,7 +509,7 @@ Let's see an example of the fixed point iteration.
 #example("Convergence of Fixed Point Iterations")[
   The function $g(x)=cos(x)$ satisfies all the assumptions @fixedpointconvergence. Indeed, $|g'(alpha)|=|sin(alpha)| tilde.eq 0.67 lt 1$, and thus by continuity there exists a neighborhood $I_alpha$ of $alpha$ such that $|g'(x)| lt 1$ for all $x in I_alpha$.
 
-  The function $g(x)=x^2 - 1$ has two fixed points $alpha_(plus.minus)=(1+sqrt(5))/2$. However,it does not satisfy the assumption for either since $g'(alpha_(plus.minus))=|1 plus.minus sqrt(5)| gt 1$. The corresponding fixed point iterations will not converge.
+  The function $g(x)=x^2 - 1$ has two fixed points $alpha_(plus.minus)=(1+sqrt(5)) / 2$. However,it does not satisfy the assumption for either since $g'(alpha_(plus.minus))=|1 plus.minus sqrt(5)| gt 1$. The corresponding fixed point iterations will not converge.
 ]
 
 #theorem("order p convergence")[
@@ -684,7 +712,7 @@ $
 $
 
 #figure(
-  image("../figures/midpoint_formula.jpg", width: auto),
+  image("./figures/midpoint_formula.jpg", width: auto),
   caption: "The composite midpoint formula (left); the midpoint formula (right)",
 )
 
@@ -704,7 +732,7 @@ $
 $
 
 #figure(
-  image("../figures/trapezoidal_formula.jpg", width: auto),
+  image("./figures/trapezoidal_formula.jpg", width: auto),
   caption: "The composite trapezoidal formula (left); the trapezoidal formula (right)",
 )
 
@@ -772,7 +800,7 @@ where $I$ is an interval of $RR$, $f: I times RR arrow.long RR$ is a given funct
 
 Unfortunately, explicit solutions are available only for very special types of ordinary differential equations. For all these reasons, we seek _numerical methods_ capable of approximating the solution of every family of ordinary differential equations for which solutions do exist.
 
-The common strategy of all these methods consists of subdividing the integration interval $I=[t_0, T]$, with $T lt plus infinity$, into $N_h$ intervals of length $h=(T-t_0)/N_h$; $h$ is called the _discretization step._ Then, at each node $t_n(0 lt.eq n lt.eq N_h-1)$ we seek the unknow value $u_n$ which approximates $y_n=y(t_n)$. The set of values ${u_0=y_0, u_1, dots, u_(N_h)}$ is our _numerical solution_.
+The common strategy of all these methods consists of subdividing the integration interval $I=[t_0, T]$, with $T lt plus infinity$, into $N_h$ intervals of length $h=(T-t_0) / N_h$; $h$ is called the _discretization step._ Then, at each node $t_n(0 lt.eq n lt.eq N_h-1)$ we seek the unknow value $u_n$ which approximates $y_n=y(t_n)$. The set of values ${u_0=y_0, u_1, dots, u_(N_h)}$ is our _numerical solution_.
 
 == Euler methods
 A classical method, the _forward Euler_ method, generates the numerical solution as follows:
@@ -824,7 +852,7 @@ $
 where $M=max_(t in [t_0, T]) abs(y''(t))$.
 
 #figure(
-  image("../figures/euler_method.jpg", width: 70%),
+  image("./figures/euler_method.jpg", width: 70%),
   caption: [Geometrical representation of a step of the forward Euler method],
 )
 
@@ -894,7 +922,7 @@ The simplest storage scheme for sparse matrices is the so-called coordinate form
 + `JC` - the column indices of the nonzero elements of $A$.
 
 #example("Coordinate format")[
-  #image("../figures/coo.png", height: auto)
+  #image("./figures/coo.png", height: auto)
 ]
 
 === Compressed sparse row (CSR)
@@ -904,30 +932,29 @@ The CSR format is similar to COO, where the row indices are compressed and repla
 + `IA` - the row offsets. contains the pointers to the beginning of each row in the array $A$ and $\JA$. The content of $I\A$ is the position in the arrays $A\A$ and $J\A$ where the row $i$ starts. The length of $I\A$ is $n+1$, with $I\A(n+1)$ containing the total number of nonzero elements in the matrix.
 
 #example("Compressed sparse row format")[
-  #image("../figures/csr.png")
+  #image("./figures/csr.png")
 ]
 
 To create a sparse matrix in the CSR format, we use the `csr_matrix` function, which is provided by the `scipy.sparse` module. Here is an example program:
 
-#sourcecode[
-  ```python
-    import scipy.sparse as sp
-    from scipy import *
+```python
+  import scipy.sparse as sp
+  from scipy import *
 
-    data = [1.0, 2.0, -1.0, 6.6, 1.4]
-    rows = [0, 1, 1, 3, 3]
-    cols = [1, 1, 2, 0, 4]
+  data = [1.0, 2.0, -1.0, 6.6, 1.4]
+  rows = [0, 1, 1, 3, 3]
+  cols = [1, 1, 2, 0, 4]
 
-    A = sp.csr_matrix((data, [rows, cols]), shape=(4, 5))
-    print(A)
+  A = sp.csr_matrix((data, [rows, cols]), shape=(4, 5))
+  print(A)
 
-    >>> A.data
-    array([ 1. ,  2. , -1. ,  6.6,  1.4])
-    >>> A.indices
-    array([1, 1, 2, 0, 4], dtype=int32)
-    >>> A.indptr
-    array([0, 1, 3, 3, 5], dtype=int32)
-  ```]
+  >>> A.data
+  array([ 1. ,  2. , -1. ,  6.6,  1.4])
+  >>> A.indices
+  array([1, 1, 2, 0, 4], dtype=int32)
+  >>> A.indptr
+  array([0, 1, 3, 3, 5], dtype=int32)
+```
 
 #pagebreak()
 
@@ -967,7 +994,7 @@ $
   a_(i j)^((2))=&a_(i j)^((1)) - m_(i 1) a_(1 j)^((1)), i, j = 2, dots, n \
   b_i^((2))=&b_i^((1)) - m_(i 1) b_1^((1)), i = 2, dots, n
 $
-where $b_i ^((1))$ denotes the elements of $bold(b)^((1))$, we have the following system:
+where $b_i^((1))$ denotes the elements of $bold(b)^((1))$, we have the following system:
 $
   mat(a_(1 1)^((1)), a_(1 2)^((1)), dots, a_(1 n)^((1)); 0, a_(2 2)^((2)), dots, a_(2 n)^((2)); dots; 0, 0, dots, a_(n n)^((n))) vec(x_1, x_2, dots, x_n) = vec(b_1^((1)), b_2^((2)), dots, b_n^((n)))
 $
@@ -986,7 +1013,7 @@ $
   $
   An elementary lower triangular matrix is a lower triangular matrix of the specific form:
   $
-    L_k(bold(m)):=I-bold(m) bold(e)^T_k = mat(1, , , , ,; , dots.down, , , ,; , , 1, , , ; , , -m_(k+1), 1, , ;  , , dots.v, , dots.down, ,; , , -m_n, , , 1)
+    L_k(bold(m)):=I-bold(m) bold(e)^T_k = mat(1, , , , , ; , dots.down, , , , ; , , 1, , , ; , , -m_(k+1), 1, , ; , , dots.v, , dots.down, , ; , , -m_n, , , 1)
   $
 ]
 
@@ -1128,7 +1155,7 @@ When $A$ is sparse, $L U$ decomposition results in $L, U$ with nonzeros(called *
 
 #figure(
   image(
-    "../figures/fill-in.jpg",
+    "./figures/fill-in.jpg",
     width: 80%,
   ),
   caption: [ Fill-in in the $L U$ decomposition of a sparse matrix ],
@@ -1222,7 +1249,7 @@ having denoted by $B$ an $n times n$ square matrix called the iteration matrix a
   Let $B$ be the iteration matrix. We call:
   + $norm(B^m)$ the _convergence factor_ after m steps of the iteration.
   + $norm(B)^(1 slash m)$ the _average convergence_ factor after m steps;
-  + $R_m(B)=-1/ m log norm(B^m)$ the _average convergence rate_ after m steps.
+  + $R_m(B)=-1 / m log norm(B^m)$ the _average convergence rate_ after m steps.
 ]
 
 == The Jacobi and Gauss-Seidel Methods
@@ -1240,13 +1267,13 @@ $
 with
 $
   L = cases(
-    a_(i j) "if" i gt j ,
+    a_(i j) "if" i gt j,
     0 "else"
   ) space space D = cases(
-    a_(i j) "if" i = j ,
+    a_(i j) "if" i = j,
     0 "else"
   ) space space R = cases(
-    a_(i j) "if" i lt j ,
+    a_(i j) "if" i lt j,
     0 "else"
   )
 $
@@ -1257,7 +1284,7 @@ $
 with entries
 $
   b_(i j) = cases(
-    -a_(i j) slash a_(i i) "if" i eq.not j ,
+    -a_(i j) slash a_(i i) "if" i eq.not j,
     0 "else"
   )
 $
@@ -1855,7 +1882,7 @@ Let $bold(y) in RR^(n)$. Then the transformation $H bold(y) = bold(y) - 2 (bold(
 We want to use Householder transformations to obtain $A= Q R$, the idea is to transform the matrix column by column
 
 #figure(
-  image("../figures/hqr.jpg", width: 80%),
+  image("./figures/hqr.jpg", width: 80%),
   caption: "Householder QR factorization",
 )
 
@@ -1888,7 +1915,7 @@ $
 After the first Householder transformation:
 
 #figure(
-  image("../figures/hqr_1.jpg", width: 50%),
+  image("./figures/hqr_1.jpg", width: 50%),
   caption: "Householder QR factorization, first step",
 )
 Let $B$ be the $(n-1) times (n -1)$ matrix that you get by deleting the first row and column of $A$. We can write $B = (bold(b)_1|bold(b)_2|dots|bold(b)_n)$, where $bold(b)_i$ is the $i$-th column of $B$. Transform the first column $bold(b)_1$ in $beta bold(e)_1$ using the Householder transformation
@@ -1902,7 +1929,7 @@ $
 After the second transformation:
 
 #figure(
-  image("../figures/hqr_2.jpg", width: 50%),
+  image("./figures/hqr_2.jpg", width: 50%),
   caption: "Householder QR factorization, second step",
 )
 
